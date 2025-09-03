@@ -1,0 +1,75 @@
+/* Tailwind directives removed or ensure Tailwind CSS build process is configured */
+
+/* Shared tokens */
+:root{
+  --bg:       #0b0e14;  /* DARK mode background */
+  --fg:       #e6e6e6;
+  --card:     #11151f;  /* DARK mode surface */
+  --muted:    #9aa0a6;
+  --accent:   #7aa2f7;
+  --accent-2: #f7768e;
+
+  /* PowerShell palette */
+  --ps-bg:      #012456;
+  --ps-fg:      #d4d4d4;
+  --ps-cmd:     #dcdcaa;
+  --ps-path:    #4fc1ff;
+  --ps-success: #a6e3a1;
+}
+
+/* Light theme overrides */
+body[data-theme='light']{
+  --bg:       #ffffff;
+  --fg:       #1b1f23;
+  --card:     #f6f8fa;
+  --muted:    #5f6a77;
+  --accent:   #3a72ff;
+  --accent-2: #d14b73;
+}
+
+/* Cards & ascii box */
+.ascii-box{white-space:pre-wrap; color:var(--muted)}
+.dashed{ border:1px dashed rgba(255,255,255,.15); }
+
+/* PowerShell terminal */
+.ps-terminal{
+  border-radius: 0.75rem; /* rounded-xl */
+  overflow: hidden;
+  border: 1px dashed rgba(255,255,255,.15); /* border-dashed */
+  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10); /* shadow-soft */
+  background: linear-gradient(180deg, rgba(1,36,86,.9), rgba(1,36,86,.95));
+  color: var(--ps-fg);
+}
+
+/* PowerShell terminal elements */
+.ps-titlebar{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px dashed rgba(255,255,255,0.20);
+  background: rgba(255,255,255,.06);
+}
+.ps-dot{ width:10px; height:10px; border-radius:50% }
+.ps-body{ font-size:13px; line-height:1.35; padding:14px; white-space:pre-wrap }
+.ps-line{ display:block }
+.ps-path{ color: var(--ps-path) }
+.ps-cmd{ color: var(--ps-cmd) }
+.ps-out{ color: var(--ps-fg) }
+
+code.ps{
+  display:block; background:var(--ps-bg); color:var(--ps-fg);
+  border:1px dashed rgba(255,255,255,.25); padding:10px; border-radius:8px;
+}
+
+/* Print CV page */
+@media print{
+  header, .no-print, .ps-titlebar { display:none !important; }
+  body{ background:#fff !important; color:#000 !important }
+  main{ max-width:800px !important }
+  a{ text-decoration:none !important; color:#000 !important }
+  .card, code, .ps-terminal{ border:1px solid #000 !important; background:#fff !important; color:#000 !important }
+}
