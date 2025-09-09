@@ -1,56 +1,89 @@
-/* Tailwind directives removed or ensure Tailwind CSS build process is configured */
+/* Base fallback */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(122,162,247,.08), transparent), var(--bg);
+  color: var(--fg);
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
 
-/* Shared tokens */
-:root{
-  --bg:       #0b0e14;  /* DARK mode background */
+:root{ /* Dark mode by default */
+  --bg:       #0b0e14;            
+  --card:     #11151f;          
   --fg:       #e6e6e6;
-  --card:     #11151f;  /* DARK mode surface */
   --muted:    #9aa0a6;
   --accent:   #7aa2f7;
   --accent-2: #f7768e;
 
-  /* PowerShell palette */
+  /* PowerShell */
   --ps-bg:      #012456;
   --ps-fg:      #d4d4d4;
-  --ps-cmd:     #dcdcaa;
   --ps-path:    #4fc1ff;
+  --ps-cmd:     #dcdcaa;
   --ps-success: #a6e3a1;
+
+  /* ASCII art */
+  --ascii-color: var(--muted);     
 }
 
-/* Light theme overrides */
+/* Light overrides (toggled by useTheme via body[data-theme]) */
 body[data-theme='light']{
   --bg:       #ffffff;
-  --fg:       #1b1f23;
   --card:     #f6f8fa;
+  --fg:       #1b1f23;
   --muted:    #5f6a77;
   --accent:   #3a72ff;
   --accent-2: #d14b73;
+  --ascii-color: var(--ascii-color-light, #374151); /* slate-700 par défaut */
 }
 
-/* Cards & ascii box */
-.ascii-box{white-space:pre-wrap; color:var(--muted)}
-.dashed{ border:1px dashed rgba(255,255,255,.15); }
+/* Layout helpers (not in Tailwind)*/
+.app-root { min-height: 100vh; }
+
+.nav-bar {
+  position: sticky; top: 0; z-index: 10;
+  backdrop-filter: saturate(1.2) blur(6px);
+  background: rgba(0,0,0,.3);
+  border-bottom: 1px dashed rgba(255,255,255,.1);
+}
+.nav-inner {
+  max-width: 1000px; margin: 0 auto; padding: 8px 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.logo { color: var(--accent-2); font-weight: 800; letter-spacing: .02em; }
+.nav-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 10px; border-radius: 10px;
+  border: 1px dashed rgba(255,255,255,.2);
+  background: transparent; color: inherit; cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); }
+
+/* Sections & Cards */
+main { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
+.section { margin: 36px 0; }
+.card-surface { background: var(--card); border: 1px dashed rgba(255,255,255,.15); border-radius: 12px; padding: 16px; }
+
+/* ASCII blocks */
+.ascii-box{ white-space: pre; color: var(--muted); overflow:auto; max-width:100%; -webkit-overflow-scrolling:touch }
+.dashed{ border:1px dashed rgba(255,255,255,.15); border-radius: 12px }
 
 /* PowerShell terminal */
 .ps-terminal{
-  border-radius: 0.75rem; /* rounded-xl */
-  overflow: hidden;
-  border: 1px dashed rgba(255,255,255,.15); /* border-dashed */
-  box-shadow: 0 2px 8px 0 rgba(0,0,0,0.10); /* shadow-soft */
+  border-radius: 12px; overflow: hidden;
+  border: 1px dashed rgba(255,255,255,.15);
+  box-shadow: 0 6px 24px rgba(0,0,0,.25);
   background: linear-gradient(180deg, rgba(1,36,86,.9), rgba(1,36,86,.95));
   color: var(--ps-fg);
 }
-
-/* PowerShell terminal elements */
 .ps-titlebar{
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px dashed rgba(255,255,255,0.20);
+  display:flex; align-items:center; gap:.5rem;
+  padding:.5rem .75rem;
+  border-bottom: 1px dashed rgba(255,255,255,.2);
   background: rgba(255,255,255,.06);
 }
 .ps-dot{ width:10px; height:10px; border-radius:50% }
@@ -65,11 +98,59 @@ code.ps{
   border:1px dashed rgba(255,255,255,.25); padding:10px; border-radius:8px;
 }
 
-/* Print CV page */
+/* Print CV */
 @media print{
   header, .no-print, .ps-titlebar { display:none !important; }
   body{ background:#fff !important; color:#000 !important }
   main{ max-width:800px !important }
   a{ text-decoration:none !important; color:#000 !important }
-  .card, code, .ps-terminal{ border:1px solid #000 !important; background:#fff !important; color:#000 !important }
+  .card-surface, code, .ps-terminal{ border:1px solid #000 !important; background:#fff !important; color:#000 !important }
+}
+
+/* Mobile tweaks */
+@media (max-width: 640px){
+  .ascii-box{ font-size: 12px; line-height: 1.2 }
+  .ps-body{ font-size: 12px; }
+}
+
+/* Layers pour la pluie en vrai background */
+.bg-layer{
+  position: fixed; inset: 0;
+  z-index: -1; /* derrière tout */
+  pointer-events: none;
+}
+.bg-rain{
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  opacity: .22;
+}
+.bg-rain.layer-2{ opacity: .30; }
+.bg-vignette{
+  position: absolute; inset: 0;
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(122,162,247,.08), transparent);
+}
+
+/* Rain theming vars */
+:root{
+  --rain-color:#7aa2f7; /* glyph color (dark theme) */
+  --rain-trail-rgb:0,0,0; /* trailing fill (dark) */
+  --rain-opacity-1:.22;   /* back layer opacity */
+  --rain-opacity-2:.30;   /* front layer opacity */
+}
+
+/* Light theme: glyphs dark + bg lighter */
+body[data-theme='light']{
+  --rain-color:#1f2937;         /* slate-800 (dark) */
+  --rain-trail-rgb:255,255,255;   /* trailing in white */
+  --rain-opacity-1:.12;
+  --rain-opacity-2:.18;
+}
+
+/* Apply opacity between two canvas layers */
+.bg-rain.layer-1{ opacity: var(--rain-opacity-1); }
+.bg-rain.layer-2{ opacity: var(--rain-opacity-2); }
+
+/* Vignette in light */
+body[data-theme='light'] .bg-vignette{
+  background: radial-gradient(1200px 600px at 80% -10%, rgba(0,0,0,.04), transparent);
 }

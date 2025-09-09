@@ -33,14 +33,14 @@ section{scroll-snap-align:start}
   return (
     <section className="py-10 grid gap-4 md:grid-cols-2">
       <ProjectCard
-        title="Victor — Pokémon TCG Pocket Exchange"
+        title="Pokémon TCG Pocket Exchange"
         status="[prod]"
         badges={['NestJS','PostgreSQL','React','Tailwind','Mobile']}
         description="B2C platform to list, trade and track collections. Multi-repo (front/back), REST API, JWT auth, secure uploads."
         code={psSnippet1}
       />
       <ProjectCard
-        title="Book Microsite — Slides & Typo"
+        title="Book showcase — Slides & Typo"
         status="[R&D]"
         badges={['HTML/CSS/JS','Slide effect','Minimal']}
         description="Micro-interactions, scroll slides, elegant typography, lightweight bundle."

@@ -1,45 +1,203 @@
-import { Routes, Route, NavLink, useNavigate } from 'react-router-dom'
-import { Sun, Moon, Printer, Mail } from 'lucide-react'
-import Home     from '@/pages/Home.jsx'
-import Projects from '@/pages/Projects.jsx'
-import CV       from '@/pages/CV.jsx'
-import Contact  from '@/pages/Contact.jsx'
-import Footer   from '@/components/Footer.jsx'
-import useTheme from '@/hooks/useTheme.js'
+import { Sun, Moon, Printer }   from 'lucide-react'
+import { useEffect, useState }  from 'react'
+
+import Footer         from '@/components/Footer.jsx'
+import useTheme       from '@/hooks/useTheme.js'
+import TerminalPS     from '@/components/TerminalPS.jsx'
+import ProjectCard    from '@/components/ProjectCard.jsx'
+import BackgroundRain from '@/components/BackgroundRain.jsx'
 
 export default function App(){
   const { theme, toggleTheme } = useTheme()
-  const nav = useNavigate()
+
+  const [active, setActive]           = useState('about')
+  const [rainSpeed, setRainSpeed]     = useState(1.0)
+  const [rainPaused, setRainPaused]   = useState(false)
+  const [rainDensity, setRainDensity] = useState(18)
+  const [rainEnabled, setRainEnabled] = useState(true)
+
+  const ascii_text = [ 
+    '┌────────────────────────────────────────────────────┐',
+    '│    “I love making systems elegant, reliable,       │',
+    '│      and fun to use. From scalable backends to     │',
+    '│      refined frontends, I design end-to-end.”      │',
+    '├────────────────────────────────────────────────────┤',
+    '│                                                    │',
+    '                      :::!~!!!!!:.                   │',
+    '│                 .xUHWH!! !!?M88WHX:.               │',
+    '               .X*#M@$!!  !X!M$$$$$$WWx:.            │',
+    '│              :!!!!!!?H! :!$!$$$$$$$$$$8X:          │',       
+    '              !!~  ~:~!! :~!$!#$$$$$$$$$$8X:         │',
+    '│             :!~::!H!<   ~.U$X!?R$$$$$$$$MM!        │',
+    '              ~!~!!!!~~ .:XW$$$U!!?$$$$$$RMM!        │',
+    '│              !:~~~ .:!M"T#$$$$WX??#MRRMMM!         │',
+    '│              ~?WuxiW*`   `"#$$$$8!!!!??!!!         │',
+    '│            :X- M$$$$       `"T#$T~!8$WUXU~         │',
+    '│            :%`  ~#$$$m:        ~!~ ?$$$$$$         │',
+    '│          :!`.-   ~T$$$$8xx.  .xWW- ~""*".          │',
+    '│         ~~!    T#$$@@W@M$$$$.*?$$     /            │',
+    '│         .!~~ !!     .:XUW$W!~ `"~:    :            │',
+    '│          `!!  !H:   !WM$$$$Ti.: .!WUn+!`           │',
+    '│         X~ .: ?H.!u "$$$B$$$!W:U!T$$M~             ',
+    '│          !.-~   ?@WTWo("*$$$W$TH$! `               │',     
+    '│          -~    : ?$$$B$Wu("**$RM!                  ',
+    '│              :   ~$$$$$B$$en:`                     │',
+    '│            :     ~"##*$$$$M~                       ',
+    '│                                                    │',                     
+    '└────────────────────────────────────────────────────┘'
+  ].join('\n')
+
+  const ascii_contact =[
+    '+--------------------------------------------------+',
+    '|  Full-Stack Developer — Node.js / React          |',
+    '|  Email: juliendrac@pm.me ·       Aix en Provence |',
+    '|  GitHub: github.com/Dracjulien                   |',
+    '+--------------------------------------------------+'
+  ].join('\n')
+
+  useEffect(() => {
+    const ids = ['about','projects','cv','contact']
+    const obs = new IntersectionObserver((entries) => {
+      const v = entries.filter(e => e.isIntersecting)
+        .sort((a,b)=> b.intersectionRatio - a.intersectionRatio)[0]
+      if (v) setActive(v.target.id)
+    }, { rootMargin: '-20% 0px -60% 0px', threshold: [0.25, 0.5, 0.75] })
+    ids.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el) })
+    return () => obs.disconnect()
+  }, [])
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(1200px_600px_at_80%_-10%,rgba(122,162,247,.08),transparent)] bg-bg text-white font-mono">
-      <header className="sticky top-0 z-10 backdrop-blur-md bg-black/30 border-b border-dashed border-white/10">
-        <nav className="max-w-5xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
-          <div className="text-accent2 font-bold tracking-wide">&gt;&gt; JULIEN DRAC</div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <NavLink className="px-3 py-1 rounded-lg border border-dashed border-white/20 hover:border-accent/80" to="/">About</NavLink>
-            <NavLink className="px-3 py-1 rounded-lg border border-dashed border-white/20 hover:border-accent/80" to="/projects">Projects</NavLink>
-            <NavLink className="px-3 py-1 rounded-lg border border-dashed border-white/20 hover:border-accent/80" to="/cv">CV</NavLink>
-            <NavLink className="px-3 py-1 rounded-lg border border-dashed border-white/20 hover:border-accent/80" to="/contact">Contact</NavLink>
-            <button onClick={()=>window.print()} className="px-3 py-1 rounded-lg border border-dashed border-white/20 hover:border-accent/80 flex items-center gap-1"><Printer size={16}/>CV</button>
-            <button onClick={toggleTheme} className="px-3 py-1 rounded-lg border border-dashed border-white/20 hover:border-accent/80 flex items-center gap-1">
+    <div className="app-root">
+      
+      {/* BACKGROUND */}
+      {rainEnabled && (
+        <BackgroundRain paused={rainPaused} density={rainDensity} speed={rainSpeed} />
+      )}
+
+      {/* NAVBAR */}
+      <header className="nav-bar">
+        <nav className="nav-inner">
+          <div className="logo">[JULIEN DRAC]</div>
+          <div className="nav-links">
+            <a className={`btn ${active==='about'?'active':''}`} href="#about">About</a>
+            <a className={`btn ${active==='projects'?'active':''}`} href="#projects">Projects</a>
+            <a className={`btn ${active==='cv'?'active':''}`} href="#cv">CV</a>
+            <a className={`btn ${active==='contact'?'active':''}`} href="#contact">Contact</a>
+            <button onClick={()=>window.print()} className="btn"><Printer size={16}/>CV</button>
+            <button onClick={toggleTheme} className="btn">
               {theme==='light' ? <Moon size={16}/> : <Sun size={16}/>}
               {theme==='light' ? 'Dark' : 'Light'}
+            </button>
+            <button className="btn" onClick={()=>setRainEnabled(v=>!v)} aria-pressed={rainEnabled}>
+              {rainEnabled ? '🌧️ Rain On' : '⛱️ Rain Off'}
             </button>
           </div>
         </nav>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4">
-        <Routes>
-          <Route path="/" element={<Home/>} />
-          <Route path="/projects" element={<Projects/>} />
-          <Route path="/cv" element={<CV/>} />
-          <Route path="/contact" element={<Contact/>} />
-        </Routes>
-      </main>
+      {/* MAIN */}
+      <main className="snap-container">
+        {/* ABOUT */}
+        <section id="about" className="section snap-section">
+          <div className="hero-grid">
+            <div>
+              <p className="muted">PORTFOLIO / FULL-STACK / ASCII ART</p>
+              <h1 style={{fontSize:'2.2rem', margin:'8px 0'}}>Full-Stack Developer</h1>
+              <pre className="ascii-box dashed" style={{padding:'12px'}}>
+                {ascii_text}
+              </pre>
+              <div style={{display:'flex', gap:8, flexWrap:'wrap', marginTop:12}}>
+                <a className="btn" href="#projects">View Projects →</a>
+                <a className="btn" href="#contact">Contact ✉︎</a>
+              </div>
+            </div>
+            <TerminalPS />
+          </div>
+        </section>
 
-      <Footer />
+        {/* PROJECTS */}
+        <section id="projects" className="section snap-section">
+          <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Selected Projects</h2>
+          <div className="cards-grid">
+            <ProjectCard
+              title="Victor — Pokémon TCG Pocket Exchange"
+              status="[prod]"
+              badges={['NestJS','PostgreSQL','React','Tailwind','Mobile']}
+              description="B2C platform to list, trade and track collections. Multi-repo, REST API, JWT auth, secure uploads."
+              code={`
+<span class="path">PS C:\\\\Victor&gt;</span> <span class="cmd">Invoke-RestMethod</span> -Uri "https://api.example.com/trades?status=open" | ConvertTo-Json
+{
+  "items": [{"id":"TR-8721","want":["Pikachu #25"],"give":["Eevee #133"],"owner":"@julien"}],
+  "meta":{"count":1}
+}
+              `.trim()}
+            />
+            <ProjectCard
+              title="Book Microsite — Slides & Typo"
+              status="[R&D]"
+              badges={['HTML/CSS/JS','Slide effect','Minimal']}
+              description="Micro-interactions, scroll slides, elegant typography, lightweight bundle."
+              code={`
+<span class="path">PS C:\\\\BookSite&gt;</span> <span class="cmd">type</span> styles.css | <span class="cmd">Select-String</span> "scroll-snap"
+.container{scroll-snap-type:y mandatory}
+section{scroll-snap-align:start}
+              `.trim()}
+            />
+            <ProjectCard
+              title="CI/CD — SaaS Monorepo"
+              status="[prod]"
+              badges={['Turborepo','GitHub Actions','Docker']}
+              description="Cache-aware pipelines, build matrices, PR previews, SAST/DAST scans."
+              code={`
+<span class="path">PS C:\\\\CI&gt;</span> <span class="cmd">cat</span> .github/workflows/ci.yml
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci && npm test
+              `.trim()}
+            />
+          </div>
+        </section>
+
+        {/* CV */}
+        <section id="cv" className="section snap-section">
+          <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Curriculum Vitae — Julien</h2>
+          <div className="card-surface">
+            <pre className="ascii-box">
+              {ascii_contact}
+            </pre>
+          </div>
+        </section>
+
+        {/* CONTACT */}
+        <section id="contact" className="section snap-section">
+          <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Contact</h2>
+          <div className="card-surface">
+            <p>Use the form (Formspree) or email me directly.</p>
+            <form method="POST" action="https://formspree.io/f/yourFormID" className="section" style={{margin:'12px 0 0', padding:0}}>
+              <div style={{display:'grid', gap:10, maxWidth:680}}>
+                <label>Name<br/><input name="name" required className="btn" style={{width:'100%'}}/></label>
+                <label>Email<br/><input type="email" name="email" required className="btn" style={{width:'100%'}}/></label>
+                <label>Message<br/><textarea name="message" rows={5} required className="btn" style={{width:'100%'}}/></label>
+                <input type="text" name="_gotcha" style={{display:'none'}} tabIndex={-1} autoComplete="off" />
+                <div style={{display:'flex', gap:10, alignItems:'center', flexWrap:'wrap'}}>
+                  <button className="btn" type="submit">Send</button>
+                  <span className="btn" style={{pointerEvents:'none'}}>julien.dev@example.com</span>
+                  <a className="btn" href="mailto:julien.dev@example.com">Open Mail</a>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+      <Footer/>
+      
     </div>
   )
 }
+
