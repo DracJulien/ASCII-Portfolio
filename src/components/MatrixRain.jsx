@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react"
 
 export default function MatrixRain({
-  density = 10,   // distance entre colonnes (px)
-  speed = 1,      // vitesse (1 = normal)
-  trail = 0.08,   // traînée (0.05 à 0.15)
+  density = 10,   
+  speed = 1,      
+  trail = 0.08,   
   fontSize = 14,  
   className = ""
 }) {
