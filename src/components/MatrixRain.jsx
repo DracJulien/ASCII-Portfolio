@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react"
 
 export default function MatrixRain({
-  density = 18,   // distance entre colonnes (px)
+  density = 10,   // distance entre colonnes (px)
   speed = 1,      // vitesse (1 = normal)
   trail = 0.08,   // traînée (0.05 à 0.15)
-  fontSize = 14,  // taille de police
+  fontSize = 14,  
   className = ""
 }) {
   const ref = useRef(null)
@@ -40,8 +40,7 @@ export default function MatrixRain({
     window.addEventListener('resize', onResize, { passive:true })
 
     const draw = () => {
-      // re-lit les variables CSS à chaque frame pour suivre le toggle light/dark
-      ({ color, trailRgb } = readVars())
+		({ color, trailRgb } = readVars())
 
       ctx.fillStyle = `rgba(${trailRgb},${trail})`
       ctx.fillRect(0,0,w,h)

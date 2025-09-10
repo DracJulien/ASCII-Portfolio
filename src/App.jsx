@@ -1,11 +1,12 @@
 import { Sun, Moon, Printer }   from 'lucide-react'
 import { useEffect, useState }  from 'react'
 
-import Footer         from '@/components/Footer.jsx'
-import useTheme       from '@/hooks/useTheme.js'
-import TerminalPS     from '@/components/TerminalPS.jsx'
-import ProjectCard    from '@/components/ProjectCard.jsx'
-import BackgroundRain from '@/components/BackgroundRain.jsx'
+import Footer           from '@/components/Footer.jsx'
+import useTheme         from '@/hooks/useTheme.js'
+import TerminalPS       from '@/components/TerminalPS.jsx'
+import ThemeSelect      from '@/components/ThemeSelect.jsx'
+import ProjectCard      from '@/components/ProjectCard.jsx'
+import BackgroundRain   from '@/components/BackgroundRain.jsx'
 
 export default function App(){
   const { theme, toggleTheme } = useTheme()
@@ -36,7 +37,7 @@ export default function App(){
     '│            :%`  ~#$$$m:        ~!~ ?$$$$$$         │',
     '│          :!`.-   ~T$$$$8xx.  .xWW- ~""*".          │',
     '│         ~~!    T#$$@@W@M$$$$.*?$$     /            │',
-    '│         .!~~ !!     .:XUW$W!~ `"~:    :            │',
+    '│         .!~~ !!     .:XUW$W!~ `"~:    :             ',
     '│          `!!  !H:   !WM$$$$Ti.: .!WUn+!`           │',
     '│         X~ .: ?H.!u "$$$B$$$!W:U!T$$M~             ',
     '│          !.-~   ?@WTWo("*$$$W$TH$! `               │',     
@@ -49,9 +50,9 @@ export default function App(){
 
   const ascii_contact =[
     '+--------------------------------------------------+',
-    '|  Full-Stack Developer — Node.js / React          |',
-    '|  Email: juliendrac@pm.me ·       Aix en Provence |',
-    '|  GitHub: github.com/Dracjulien                   |',
+    '│  Full-Stack Developer — Node.js / React          │',
+    '│  Email: juliendrac@pm.me · Aix en Provence (FR)  │',
+    '│  GitHub: github.com/Dracjulien                   │',
     '+--------------------------------------------------+'
   ].join('\n')
 
@@ -88,6 +89,7 @@ export default function App(){
               {theme==='light' ? <Moon size={16}/> : <Sun size={16}/>}
               {theme==='light' ? 'Dark' : 'Light'}
             </button>
+            <ThemeSelect theme={theme} />
             <button className="btn" onClick={()=>setRainEnabled(v=>!v)} aria-pressed={rainEnabled}>
               {rainEnabled ? '🌧️ Rain On' : '⛱️ Rain Off'}
             </button>
@@ -103,7 +105,7 @@ export default function App(){
             <div>
               <p className="muted">PORTFOLIO / FULL-STACK / ASCII ART</p>
               <h1 style={{fontSize:'2.2rem', margin:'8px 0'}}>Full-Stack Developer</h1>
-              <pre className="ascii-box dashed" style={{padding:'12px'}}>
+              <pre className="ascii-box ascii-multi dashed" style={{padding:'12px'}}>
                 {ascii_text}
               </pre>
               <div style={{display:'flex', gap:8, flexWrap:'wrap', marginTop:12}}>
@@ -165,14 +167,12 @@ jobs:
         </section>
 
         {/* CV */}
-        <section id="cv" className="section snap-section">
+        
           <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Curriculum Vitae — Julien</h2>
-          <div className="card-surface">
-            <pre className="ascii-box">
-              {ascii_contact}
-            </pre>
-          </div>
-        </section>
+
+          <pre className="ascii-box ascii-multi">
+            {ascii_contact}
+          </pre>
 
         {/* CONTACT */}
         <section id="contact" className="section snap-section">

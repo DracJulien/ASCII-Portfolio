@@ -17,6 +17,7 @@ a:hover { text-decoration: underline; }
   --muted:    #9aa0a6;
   --accent:   #7aa2f7;
   --accent-2: #f7768e;
+  --ascii-bg: rgba(255,255,255,.04);
 
   /* PowerShell */
   --ps-bg:      #012456;
@@ -26,21 +27,50 @@ a:hover { text-decoration: underline; }
   --ps-success: #a6e3a1;
 
   /* ASCII art */
-  --ascii-color: var(--muted);     
+  --ascii-color: var(--muted);  
+  
+  /* Gradient colors for ASCII art */
+  --skull-c1:#7aa2f7;  
+  --skull-c2:#a78bfa;  
+  --skull-c3:#f472b6;  
+  --skull-c4:#a78bfa;  
+  --skull-c5:#7aa2f7;  
 }
 
-/* Light overrides (toggled by useTheme via body[data-theme]) */
+/* ===== Light ultra-soft ===== */
 body[data-theme='light']{
-  --bg:       #ffffff;
-  --card:     #f6f8fa;
-  --fg:       #1b1f23;
-  --muted:    #5f6a77;
-  --accent:   #3a72ff;
-  --accent-2: #d14b73;
-  --ascii-color: var(--ascii-color-light, #374151); /* slate-700 par défaut */
+  --bg:   #e7ebf2;  
+  --card: #dde3ec;   
+  --fg:   #0f1620;   
+  --muted:#4b5563;   
+  --accent:#2d6df6;
+  --accent-2:#bf4d7d;
+
+  /* ASCII */
+  --ascii-bg:#e3e8f1;    
+  --rain-color:#1f2937;        
+  --rain-trail-rgb:231,235,242;
+  --rain-opacity-1:.08;        
+  --rain-opacity-2:.12;       
 }
 
-/* Layout helpers (not in Tailwind)*/
+/* Nav & bordures assouplies en light */
+body[data-theme='light'] .nav-bar{
+  background: rgba(255,255,255,.55);
+  backdrop-filter: blur(8px) saturate(1.05);
+  border-bottom-color: rgba(0,0,0,.08);
+}
+body[data-theme='light'] .dashed{
+  border-color: rgba(0,0,0,.12);
+}
+
+/* Vignette très subtile en light (moins contrastée) */
+body[data-theme='light'] .bg-vignette{
+  background: radial-gradient(1000px 500px at 80% -10%, rgba(0,0,0,.025), transparent);
+}
+
+
+/* Layout helpers */
 .app-root { min-height: 100vh; }
 
 .nav-bar {
@@ -53,7 +83,19 @@ body[data-theme='light']{
   max-width: 1000px; margin: 0 auto; padding: 8px 16px;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
 }
-.logo { color: var(--accent-2); font-weight: 800; letter-spacing: .02em; }
+.logo{
+  font-weight: 800;
+  letter-spacing: .02em;
+
+  background-image: linear-gradient(
+    90deg,
+    var(--skull-c1), var(--skull-c2), var(--skull-c3)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent; /* rend le texte transparent pour voir le gradient */
+  text-shadow: 0 0 0.5px rgba(0,0,0,.35); /* petit halo pour la lisibilité */
+}
 .nav-links { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .btn {
   display: inline-flex; align-items: center; gap: 6px;
@@ -69,7 +111,19 @@ main { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
 .card-surface { background: var(--card); border: 1px dashed rgba(255,255,255,.15); border-radius: 12px; padding: 16px; }
 
 /* ASCII blocks */
-.ascii-box{ white-space: pre; color: var(--muted); overflow:auto; max-width:100%; -webkit-overflow-scrolling:touch }
+.ascii-box{
+  white-space: pre;
+  color: var(--ascii-color);
+  overflow: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+
+  /* fond + style */
+  background: var(--ascii-bg);
+  border-radius: 12px;
+  padding: 12px;
+  backdrop-filter: saturate(1.30) blur(15px); /* glassmorphism */
+}
 .dashed{ border:1px dashed rgba(255,255,255,.15); border-radius: 12px }
 
 /* PowerShell terminal */
@@ -80,19 +134,25 @@ main { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
   background: linear-gradient(180deg, rgba(1,36,86,.9), rgba(1,36,86,.95));
   color: var(--ps-fg);
 }
+
 .ps-titlebar{
   display:flex; align-items:center; gap:.5rem;
   padding:.5rem .75rem;
   border-bottom: 1px dashed rgba(255,255,255,.2);
   background: rgba(255,255,255,.06);
 }
+.ps-titlebar .buttons{ display:flex; gap:.5rem }
+.ps-titlebar .title{ font-weight:600; font-size:.875rem; color:var(--ps-fg) }
+.ps-titlebar .spacer{ flex-grow:1 }
 .ps-dot{ width:10px; height:10px; border-radius:50% }
 .ps-body{ font-size:13px; line-height:1.35; padding:14px; white-space:pre-wrap }
 .ps-line{ display:block }
 .ps-path{ color: var(--ps-path) }
 .ps-cmd{ color: var(--ps-cmd) }
 .ps-out{ color: var(--ps-fg) }
+.ps-success{ color: var(--ps-success) }
 
+/* Inline code */
 code.ps{
   display:block; background:var(--ps-bg); color:var(--ps-fg);
   border:1px dashed rgba(255,255,255,.25); padding:10px; border-radius:8px;
@@ -113,18 +173,24 @@ code.ps{
   .ps-body{ font-size: 12px; }
 }
 
-/* Layers pour la pluie en vrai background */
+/* Background rain effect */
 .bg-layer{
   position: fixed; inset: 0;
-  z-index: -1; /* derrière tout */
+  z-index: -1;
   pointer-events: none;
 }
+
+/* Rain canvas */
 .bg-rain{
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   opacity: .22;
 }
+
+/* Two layers for parallax */
 .bg-rain.layer-2{ opacity: .30; }
+
+/* Vignette effect */
 .bg-vignette{
   position: absolute; inset: 0;
   background: radial-gradient(1200px 600px at 80% -10%, rgba(122,162,247,.08), transparent);
@@ -144,6 +210,13 @@ body[data-theme='light']{
   --rain-trail-rgb:255,255,255;   /* trailing in white */
   --rain-opacity-1:.12;
   --rain-opacity-2:.18;
+
+  /* Gradient colors for ASCII art in light mode */
+  --skull-c1:#0ea5e9;
+  --skull-c2:#8b5cf6;
+  --skull-c3:#ec4899;
+  --skull-c4:#f59e0b;
+  --skull-c5:#10b981;
 }
 
 /* Apply opacity between two canvas layers */
@@ -153,4 +226,25 @@ body[data-theme='light']{
 /* Vignette in light */
 body[data-theme='light'] .bg-vignette{
   background: radial-gradient(1200px 600px at 80% -10%, rgba(0,0,0,.04), transparent);
+}
+
+/* ASCII art special styles */
+.ascii-box{
+  white-space: pre;
+  color: var(--ascii-color);
+  overflow: auto;
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Multicolor gradient for ASCII art */
+.ascii-multi{
+  background-image: linear-gradient(
+    90deg,
+    var(--skull-c1), var(--skull-c2), var(--skull-c3), var(--skull-c4), var(--skull-c5)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important; 
+  text-shadow: 0 0 0.5px rgba(0,0,0,.35);
 }
