@@ -107,7 +107,7 @@ export default function App(){
               <p className="muted">PORTFOLIO / ASCII ART</p>
               <div className="title-row">
                 <h1 style={{ fontSize: '2.2rem', margin: '8px 0' }}>
-                  Julien — Full-Stack Developer
+                  Full-Stack Developer
                 </h1>
                 <div className="title-cta">
                   <CloneMeButton repo="https://github.com/Dracjulien/ascii-portfolio" />
