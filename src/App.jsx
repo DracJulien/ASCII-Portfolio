@@ -6,6 +6,7 @@ import useTheme         from '@/hooks/useTheme.js'
 import TerminalPS       from '@/components/TerminalPS.jsx'
 import ThemeSelect      from '@/components/ThemeSelect.jsx'
 import ProjectCard      from '@/components/ProjectCard.jsx'
+import CloneMeButton    from '@/components/CloneMeButton.jsx'
 import BackgroundRain   from '@/components/BackgroundRain.jsx'
 
 export default function App(){
@@ -103,8 +104,16 @@ export default function App(){
         <section id="about" className="section snap-section">
           <div className="hero-grid">
             <div>
-              <p className="muted">PORTFOLIO / FULL-STACK / ASCII ART</p>
-              <h1 style={{fontSize:'2.2rem', margin:'8px 0'}}>Full-Stack Developer</h1>
+              <p className="muted">PORTFOLIO / ASCII ART</p>
+              <div className="title-row">
+                <h1 style={{ fontSize: '2.2rem', margin: '8px 0' }}>
+                  Julien — Full-Stack Developer
+                </h1>
+                <div className="title-cta">
+                  <CloneMeButton repo="https://github.com/Dracjulien/ascii-portfolio" />
+                </div>
+              </div>
+
               <pre className="ascii-box ascii-multi dashed" style={{padding:'12px'}}>
                 {ascii_text}
               </pre>

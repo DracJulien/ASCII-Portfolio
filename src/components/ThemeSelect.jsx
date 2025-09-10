@@ -1,3 +1,4 @@
+// src/components/ThemeSelect.jsx
 import { useEffect, useState } from "react"
 
 const PRESET_KEY = "presetName"
@@ -108,31 +109,33 @@ const PRESETS = {
 }
 
 function applyVars(vars, mode){
-  
-	/* accents */
   document.body.style.setProperty('--accent', vars.accent)
   document.body.style.setProperty('--accent-2', vars.accent2)
-  
-	/* rain (utilisé par MatrixRain) */
   document.body.style.setProperty('--rain-color', vars.rainColor)
   document.body.style.setProperty('--rain-trail-rgb', vars.trailRgb)
-
-  /* skull / logo gradient */
   const [c1,c2,c3,c4,c5] = vars.skull
   document.body.style.setProperty('--skull-c1', c1)
   document.body.style.setProperty('--skull-c2', c2)
   document.body.style.setProperty('--skull-c3', c3)
   document.body.style.setProperty('--skull-c4', c4)
   document.body.style.setProperty('--skull-c5', c5)
-
-  /* ASCII text color */
   if (mode === 'light') {
     document.body.style.setProperty('--ascii-color-light', vars.asciiLight)
-    document.body.style.setProperty('--ascii-color', vars.asciiLight) // rendu instantané en light
+    document.body.style.setProperty('--ascii-color', vars.asciiLight)
   } else {
-    document.body.style.setProperty('--ascii-color', vars.asciiDark)  // rendu instantané en dark
+    document.body.style.setProperty('--ascii-color', vars.asciiDark)
   }
 }
+
+const gradientStyle = (colors, w=60, h=10) => ({
+  width: w, height: h, borderRadius: 999,
+  backgroundImage: `linear-gradient(90deg, ${colors.join(',')})`,
+  boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.15), 0 0 0 1px rgba(0,0,0,.2)'
+})
+const dot = (c) => ({
+  width: 10, height: 10, borderRadius: 999, background: c,
+  boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.2), 0 0 0 1px rgba(0,0,0,.25)'
+})
 
 export default function ThemeSelect({ theme }){
   const [open, setOpen] = useState(false)
@@ -144,34 +147,50 @@ export default function ThemeSelect({ theme }){
     localStorage.setItem(PRESET_KEY, name)
   }, [name, theme])
 
+  const current = (PRESETS[name] || PRESETS.default)[theme]
+
   const panelStyle = {
     position:'absolute', right:0, top:'100%', marginTop:8, zIndex:60,
     background:'var(--card)', color:'var(--fg)',
-    border:'1px dashed rgba(255,255,255,.2)', borderRadius:12, padding:10, width:220,
+    border:'1px dashed rgba(255,255,255,.2)', borderRadius:12, padding:10, width:260,
     boxShadow:'0 6px 24px rgba(0,0,0,.25)'
   }
+  const row = { display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }
 
   return (
     <div style={{position:'relative'}}>
-      <button className="btn" onClick={()=>setOpen(o=>!o)}>🎨 Theme ▾</button>
+      {/* === Bouton avec preview (dégradé skull + pastilles accent/rain) === */}
+      <button className="btn" onClick={()=>setOpen(o=>!o)} aria-haspopup="listbox" aria-expanded={open}>
+        🎨 Theme
+        <span style={{display:'inline-flex', alignItems:'center', gap:8, marginLeft:8}}>
+          <span style={gradientStyle(current.skull, 56, 8)} />
+          <span style={dot(current.accent)} />
+          <span style={dot(current.rainColor)} />
+        </span>
+        ▾
+      </button>
+
       {open && (
-        <div style={panelStyle}>
-          {Object.entries(PRESETS).map(([key, p]) => (
-            <button
-              key={key}
-              className="btn"
-              style={{
-                width:'100%', justifyContent:'space-between', marginBottom:6,
-                borderColor: key===name ? 'var(--accent)' : 'rgba(255,255,255,.2)'
-              }}
-              onClick={() => { setName(key); setOpen(false) }}
-            >
-              {p.label} {key===name ? '✓' : ''}
-            </button>
-          ))}
-          <div style={{fontSize:12, color:'var(--muted)', marginTop:4}}>
-            S’applique immédiatement (couleurs d’accents, pluie, logo/crâne, ASCII).
-          </div>
+        <div style={panelStyle} role="listbox" aria-label="Theme presets">
+          {Object.entries(PRESETS).map(([key, p]) => {
+            const v = p[theme]
+            return (
+              <button
+                key={key}
+                className="btn"
+                style={{ ...row, width:'100%', marginBottom:6, borderColor: key===name ? 'var(--accent)' : 'rgba(255,255,255,.2)' }}
+                onClick={() => { setName(key); setOpen(false) }}
+                aria-selected={key===name}
+              >
+                <span>{p.label}</span>
+                <span style={{display:'inline-flex', alignItems:'center', gap:8}}>
+                  <span style={gradientStyle(v.skull)} />
+                  <span title="Accent" style={dot(v.accent)} />
+                  <span title="Rain" style={dot(v.rainColor)} />
+                </span>
+              </button>
+            )
+          })}
         </div>
       )}
     </div>

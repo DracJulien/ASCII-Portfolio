@@ -37,7 +37,18 @@ a:hover { text-decoration: underline; }
   --skull-c5:#7aa2f7;  
 }
 
-/* ===== Light ultra-soft ===== */
+.title-row{
+  display:flex; align-items:center; gap:10px; flex-wrap:nowrap;
+}
+.title-cta{
+  margin-left:auto;            
+  display:flex; align-items:center;
+}
+@media (max-width: 600px){
+  .title-row{ flex-wrap:wrap; }
+  .title-cta{ margin-left:0; width:100%; justify-content:flex-end; }
+}
+/* Light theme overrides */
 body[data-theme='light']{
   --bg:   #e7ebf2;  
   --card: #dde3ec;   
@@ -54,7 +65,6 @@ body[data-theme='light']{
   --rain-opacity-2:.12;       
 }
 
-/* Nav & bordures assouplies en light */
 body[data-theme='light'] .nav-bar{
   background: rgba(255,255,255,.55);
   backdrop-filter: blur(8px) saturate(1.05);
@@ -64,11 +74,9 @@ body[data-theme='light'] .dashed{
   border-color: rgba(0,0,0,.12);
 }
 
-/* Vignette très subtile en light (moins contrastée) */
 body[data-theme='light'] .bg-vignette{
   background: radial-gradient(1000px 500px at 80% -10%, rgba(0,0,0,.025), transparent);
 }
-
 
 /* Layout helpers */
 .app-root { min-height: 100vh; }
