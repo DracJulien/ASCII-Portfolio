@@ -196,8 +196,8 @@ jobs:
                 <input type="text" name="_gotcha" style={{display:'none'}} tabIndex={-1} autoComplete="off" />
                 <div style={{display:'flex', gap:10, alignItems:'center', flexWrap:'wrap'}}>
                   <button className="btn" type="submit">Send</button>
-                  <span className="btn" style={{pointerEvents:'none'}}>julien.dev@example.com</span>
-                  <a className="btn" href="mailto:julien.dev@example.com">Open Mail</a>
+                  <span className="btn" style={{pointerEvents:'none'}}>juliendrac@pm.me</span>
+                  <a className="btn" href="mailto:juliendrac@pm.me">Open Mail</a>
                 </div>
               </div>
             </form>
@@ -205,7 +205,6 @@ jobs:
         </section>
       </main>
       <Footer/>
-      
     </div>
   )
 }
