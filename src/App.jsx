@@ -1,13 +1,16 @@
 import { Sun, Moon, Printer }   from 'lucide-react'
 import { useEffect, useState }  from 'react'
 
-import Footer           from '@/components/Footer.jsx'
-import useTheme         from '@/hooks/useTheme.js'
-import TerminalPS       from '@/components/TerminalPS.jsx'
-import ThemeSelect      from '@/components/ThemeSelect.jsx'
-import ProjectCard      from '@/components/ProjectCard.jsx'
-import CloneMeButton    from '@/components/CloneMeButton.jsx'
-import BackgroundRain   from '@/components/BackgroundRain.jsx'
+import Footer             from '@/components/Footer.jsx'
+import useTheme           from '@/hooks/useTheme.js'
+import ThemeSelect        from '@/components/ThemeSelect.jsx'
+import HeatmapCard        from './components/HeatmapCard'
+import ProjectCard        from '@/components/ProjectCard.jsx'
+import TerminalTabs       from '@/components/TerminalTabs.jsx'
+import CloneMeButton      from '@/components/CloneMeButton.jsx'
+import BackgroundRain     from '@/components/BackgroundRain.jsx'
+import HeatmapWithRefresh from "@/components/HeatmapWithRefresh.jsx"
+
 
 export default function App(){
   const { theme, toggleTheme } = useTheme()
@@ -17,6 +20,15 @@ export default function App(){
   const [rainPaused, setRainPaused]   = useState(false)
   const [rainDensity, setRainDensity] = useState(18)
   const [rainEnabled, setRainEnabled] = useState(true)
+  const data = {
+    "2025-03-02": 2,
+    "2025-03-05": 4,
+    "2025-04-01": 1,
+  }
+
+  const dates = [
+    "2025-03-02","2025-03-02","2025-03-05","2025-04-01"
+  ]
 
   const ascii_text = [ 
     '┌────────────────────────────────────────────────────┐',
@@ -50,11 +62,12 @@ export default function App(){
   ].join('\n')
 
   const ascii_contact =[
-    '+--------------------------------------------------+',
-    '│  Full-Stack Developer — Node.js / React          │',
-    '│  Email: juliendrac@pm.me · Aix en Provence (FR)  │',
-    '│  GitHub: github.com/Dracjulien                   │',
-    '+--------------------------------------------------+'
+    '┌────────────────────────────────────────────────────┐',
+    '     Full-Stack Developer — Node.js / React           ',
+    '     Email: juliendrac@pm.me · Aix en Provence (FR)   ',
+    '     GitHub: github.com/Dracjulien                    ',
+    '     LinkedIn: linkedin.com/in/julien-drac            ',
+    '└────────────────────────────────────────────────────┘'
   ].join('\n')
 
   useEffect(() => {
@@ -113,16 +126,32 @@ export default function App(){
                   <CloneMeButton repo="https://github.com/Dracjulien/ascii-portfolio" />
                 </div>
               </div>
-
-              <pre className="ascii-box ascii-multi dashed" style={{padding:'12px'}}>
-                {ascii_text}
-              </pre>
+              <div className="ascii-combo">
+                <div className="ascii-combo-grid">
+                  <pre
+                    className="ascii-multi"
+                    style={{ whiteSpace:'pre', margin:0 }}
+                  >
+                    {ascii_text}
+                  </pre>
+                  
+                  <pre
+                    style={{ whiteSpace:'pre', margin:0, lineHeight:1.3 }}
+                  >
+                  {ascii_contact}
+                  </pre>
+                </div>
+              </div>
+              <HeatmapWithRefresh />
+              <HeatmapCard src="/gh-contribs.json" baseVar="--accent" className="mt-6" />
+              
+              {/* CTA buttons */}
               <div style={{display:'flex', gap:8, flexWrap:'wrap', marginTop:12}}>
                 <a className="btn" href="#projects">View Projects →</a>
                 <a className="btn" href="#contact">Contact ✉︎</a>
               </div>
             </div>
-            <TerminalPS />
+            <TerminalTabs/>
           </div>
         </section>
 
@@ -177,11 +206,11 @@ jobs:
 
         {/* CV */}
         
-          <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Curriculum Vitae — Julien</h2>
+        <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Curriculum Vitae — Julien</h2>
 
-          <pre className="ascii-box ascii-multi">
-            {ascii_contact}
-          </pre>
+        <pre className="ascii-box ascii-multi">
+          {ascii_contact}
+        </pre>
 
         {/* CONTACT */}
         <section id="contact" className="section snap-section">
