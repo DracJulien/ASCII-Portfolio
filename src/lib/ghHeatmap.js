@@ -11,11 +11,11 @@ function hexToRgb(hex){
 function rgba(hex, a){ const {r,g,b} = hexToRgb(hex); return `rgba(${r},${g},${b},${a})` }
 
 /**
- * JSON attendu par défaut :
- * { weeks: number[7][], months: [{index:number,label:string}] }
- * - weeks = colonnes, chaque colonne = 7 niveaux 0..4 (Mon→Sun)
- * - months optionnel : si absent, il est calculé automatiquement
- */
+  JSON attendu par défaut :
+  { weeks: number[7][], months:[{index:number,label:string}] }
+    - weeks = colonnes, chaque colonne = 7 niveaux 0..4 (Mon → Sun)
+    - months optionnel : si absent, il est calculé automatiquement
+*/
 export async function initGHHeatmap({
   root,
   src = "/gh-contribs.json",
@@ -41,6 +41,7 @@ export async function initGHHeatmap({
     ? json.months
     : autoMonths(weeks.length)
 
+  /* HTML structure */
   const monthRow = `<div class="gh-months" style="display:grid;grid-template-columns:repeat(${weeks.length},${CELL+GAP}px)">
     ${months.map(m=>`<div style="grid-column-start:${m.index+1}">${m.label}</div>`).join("")}
   </div>`
@@ -84,6 +85,7 @@ export async function initGHHeatmap({
   el.classList.add("gh-wrap")
   el.innerHTML = html
 
+  /* paint every cells */
   function paint(){
     const accent = cssVar(baseVar, "#22c55e")
     const palette = [rgba(accent,.15), rgba(accent,.35), rgba(accent,.55), rgba(accent,.78), rgba(accent,1)]
@@ -100,12 +102,14 @@ export async function initGHHeatmap({
 
   paint()
 
+  /* paint on theme change */
   const mo = new MutationObserver(paint)
   mo.observe(document.body, { attributes:true, attributeFilter:["style","data-theme","class"] })
 
   return () => mo.disconnect()
 }
 
+/* gen months labels if JSON doesn't exist */
 function autoMonths(weeks){
   const labels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
   const out = []
