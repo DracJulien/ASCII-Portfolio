@@ -106,11 +106,10 @@ export async function initGHHeatmap({
   return () => mo.disconnect()
 }
 
-/* calcule des positions de mois si non fournis */
 function autoMonths(weeks){
   const labels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
   const out = []
-  // on place un label toutes les ~4.5 semaines pour avoir un repère raisonnable
+
   for (let i=0;i<weeks;i++){
     if (i===0 || i%4===0) out.push({ index:i, label: labels[i%12] })
   }

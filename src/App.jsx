@@ -143,8 +143,6 @@ export default function App(){
                 </div>
               </div>
               <HeatmapWithRefresh />
-              <HeatmapCard src="/gh-contribs.json" baseVar="--accent" className="mt-6" />
-              
               {/* CTA buttons */}
               <div style={{display:'flex', gap:8, flexWrap:'wrap', marginTop:12}}>
                 <a className="btn" href="#projects">View Projects →</a>
@@ -160,8 +158,8 @@ export default function App(){
           <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Selected Projects</h2>
           <div className="cards-grid">
             <ProjectCard
-              title="Victor — Pokémon TCG Pocket Exchange"
-              status="[prod]"
+              title="Pokémon TCG Pocket Exchange"
+              status="[dev]"
               badges={['NestJS','PostgreSQL','React','Tailwind','Mobile']}
               description="B2C platform to list, trade and track collections. Multi-repo, REST API, JWT auth, secure uploads."
               code={`
@@ -205,7 +203,6 @@ jobs:
         </section>
 
         {/* CV */}
-        
         <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Curriculum Vitae — Julien</h2>
 
         <pre className="ascii-box ascii-multi">
