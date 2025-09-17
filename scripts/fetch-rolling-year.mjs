@@ -1,8 +1,8 @@
 import fs from "node:fs/promises"
 
 const LOGIN 		= process.env.LOGIN || "Dracjulien"
-const GH_TOKEN 	= process.env.GH_TOKEN || process.env.GITHUB_TOKEN
-const to 				= new Date(); to.setHours(0,0,0,0)
+const GH_TOKEN 		= process.env.GH_TOKEN || process.env.GITHUB_TOKEN
+const to 			= new Date(); to.setHours(0,0,0,0)
 const from 			= new Date(to); from.setDate(from.getDate() - 365)
 
 const query = `
