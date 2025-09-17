@@ -3,8 +3,8 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				bg: 		'#0b0e14',
-				card:		'#11151f',
+				bg:'#0b0e14',
+				card:'#11151f',
 				psbg:		'#012456',
 				accent:	'#7aa2f7',
 				accent2:'#f7768e',

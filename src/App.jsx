@@ -1,11 +1,11 @@
 import { Sun, Moon, Printer }   from 'lucide-react'
 import { useEffect, useState }  from 'react'
-
-import Footer             from '@/components/Footer.jsx'
 import useTheme           from '@/hooks/useTheme.js'
+import Footer             from '@/components/Footer.jsx'
 import ThemeSelect        from '@/components/ThemeSelect.jsx'
-import HeatmapCard        from './components/HeatmapCard'
+import HeatmapCard        from './components/HeatmapCard.jsx'
 import ProjectCard        from '@/components/ProjectCard.jsx'
+import VersionBadge       from '@/components/VersionBadge.jsx'
 import TerminalTabs       from '@/components/TerminalTabs.jsx'
 import CloneMeButton      from '@/components/CloneMeButton.jsx'
 import BackgroundRain     from '@/components/BackgroundRain.jsx'
@@ -20,16 +20,7 @@ export default function App(){
   const [rainPaused, setRainPaused]   = useState(false)
   const [rainDensity, setRainDensity] = useState(18)
   const [rainEnabled, setRainEnabled] = useState(true)
-  const data = {
-    "2025-03-02": 2,
-    "2025-03-05": 4,
-    "2025-04-01": 1,
-  }
-
-  const dates = [
-    "2025-03-02","2025-03-02","2025-03-05","2025-04-01"
-  ]
-
+  
   const ascii_text = [ 
     '┌────────────────────────────────────────────────────┐',
     '│    “I love making systems elegant, reliable,       │',
@@ -117,7 +108,8 @@ export default function App(){
         <section id="about" className="section snap-section">
           <div className="hero-grid">
             <div>
-              <p className="muted">PORTFOLIO / ASCII ART</p>
+              <p className="muted">PORTFOLIO / ASCII ART <VersionBadge /></p>
+              
               <div className="title-row">
                 <h1 style={{ fontSize: '2.2rem', margin: '8px 0' }}>
                   Full-Stack Developer
@@ -130,15 +122,12 @@ export default function App(){
                 <div className="ascii-combo-grid">
                   <pre
                     className="ascii-multi"
-                    style={{ whiteSpace:'pre', margin:0 }}
-                  >
+                    style={{ whiteSpace:'pre', margin:0 }}>
                     {ascii_text}
                   </pre>
-                  
                   <pre
-                    style={{ whiteSpace:'pre', margin:0, lineHeight:1.3 }}
-                  >
-                  {ascii_contact}
+                    style={{ whiteSpace:'pre', margin:0, lineHeight:1.3 }}>
+                    {ascii_contact}
                   </pre>
                 </div>
               </div>
