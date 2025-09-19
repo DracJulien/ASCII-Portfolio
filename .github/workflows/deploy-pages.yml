@@ -21,12 +21,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20.19.0
+          node-version: 22   # ou 20.19.0
           cache: npm
       - run: npm ci
       - name: Set build metadata
         run: |
-         APP_VERSION=$(node -p 'require("./package.json").version')
+          APP_VERSION=$(node -p 'require("./package.json").version')
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
           echo "SHORT_SHA=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
           echo "BUILD_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_ENV
@@ -47,3 +47,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+

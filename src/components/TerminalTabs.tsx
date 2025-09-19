@@ -1,6 +1,6 @@
 import { useState } from "react"
-import TerminalPS from "./TerminalPS.jsx"
-import TerminalSH from "./TerminalSH.jsx"
+import TerminalPS from "./TerminalPS.js"
+import TerminalSH from "./TerminalSH.js"
 
 export default function TerminalTabs(){
   const [tab, setTab] = useState('ps')

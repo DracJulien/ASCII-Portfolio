@@ -1,16 +1,17 @@
-// vite.config.js
 import { defineConfig } from 'vite'
-import reactPlugin from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig(() => {
   const repo = (process.env.GITHUB_REPOSITORY || 'Dracjulien/ASCII-Portfolio')
-    .split('/').pop()
-  const base = process.env.GITHUB_PAGES ? `/${repo}/` : '/'
+    .split('/')
+    .pop()
+  const isCI = !!process.env.GITHUB_ACTIONS
+  const base = isCI ? `/${repo}/` : '/'
 
   return {
     base,
-    plugins: [reactPlugin()],
+    plugins: [react()],
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
