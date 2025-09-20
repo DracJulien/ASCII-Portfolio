@@ -1,4 +1,12 @@
-export default function ProjectCard({ title, status='[prod]', badges=[], description, code }){
+type ProjectCardProps = {
+  title: string
+  status: string
+  badges: string[]
+  description: string
+  code: string
+}
+
+export default function ProjectCard({ title, status='[prod]', badges=[], description, code }: ProjectCardProps){
   return (
     <article className="dashed rounded-xl p-4 bg-card/80">
       <div className="flex items-center gap-2 flex-wrap">

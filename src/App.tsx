@@ -15,6 +15,14 @@ import HeatmapWithRefresh from "@/components/HeatmapWithRefresh"
 
 type SectionId = "about" | "projects" | "cv" | "contact"
 
+type ProjectCardProps = {
+  title: string
+  status: string
+  badges: string[]
+  description: string
+  code: string
+}
+
 export default function App(): JSX.Element {
   const { theme, toggleTheme } = useTheme()
 
@@ -23,6 +31,7 @@ export default function App(): JSX.Element {
   const [rainPaused, setRainPaused] = useState<boolean>(false)
   const [rainDensity, setRainDensity] = useState<number>(18)
   const [rainEnabled, setRainEnabled] = useState<boolean>(true)
+  const [effects, setEffects] = useState<string[]>([])
 
   const ascii_text: string = [
     "┌────────────────────────────────────────────────────┐",
