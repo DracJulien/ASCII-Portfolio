@@ -41,17 +41,27 @@ for (const w of weeksRaw) for (const d of w.contributionDays) counts[d.date.slic
 
 /* gen format gh-heatmap.js */
 function iso(d){ return d.toISOString().slice(0,10) }
-function mondayAlignedStart(endDate, weeks){
-	const start = new Date(endDate)
-	start.setDate(start.getDate() - (weeks*7 - 1))
-	const day = start.getDay()
-	start.setDate(start.getDate() + (day === 0 ? -6 : 1 - day))
-	start.setHours(0,0,0,0)
-	return start
+function alignToMonday(date){
+	const aligned = new Date(date)
+	const day = aligned.getDay()
+	const delta = day === 1 ? 0 : (day === 0 ? -6 : 1 - day)
+	aligned.setDate(aligned.getDate() + delta)
+	aligned.setHours(0,0,0,0)
+	return aligned
+}
+function alignToSunday(date){
+	const aligned = new Date(date)
+	const day = aligned.getDay()
+	const delta = day === 0 ? 0 : 7 - day
+	aligned.setDate(aligned.getDate() + delta)
+	aligned.setHours(0,0,0,0)
+	return aligned
 }
 
-const WEEKS = 53
-const start = mondayAlignedStart(to, WEEKS)
+const start = alignToMonday(from)
+const end = alignToSunday(to)
+const weekMs = 7 * 24 * 60 * 60 * 1000
+const WEEKS = Math.floor((end - start) / weekMs) + 1
 
 /* contribution level 0..4 */
 function level(n){
@@ -70,7 +80,9 @@ for (let w=0; w<WEEKS; w++){
 	const col = []
 	for (let d=0; d<7; d++){
 		const cur = new Date(start); cur.setDate(start.getDate() + w*7 + d)
-		col.push(level(counts[iso(cur)] || 0))
+		const inRange = cur >= from && cur <= to
+		const lvl = inRange ? level(counts[iso(cur)] || 0) : null
+		col.push(lvl)
 	}
 	weeks.push(col)
 	const m = new Date(start); m.setDate(start.getDate() + w*7)
@@ -82,5 +94,16 @@ for (let w=0; w<WEEKS; w++){
 }
 /* end gen */
 await fs.mkdir("public", {recursive:true})
-await fs.writeFile("public/gh-contribs.json", JSON.stringify({ weeks, months, asOf: iso(to), login: LOGIN }, null, 2))
+await fs.writeFile(
+	"public/gh-contribs.json",
+	JSON.stringify({
+		weeks,
+		months,
+		asOf: iso(to),
+		from: iso(from),
+		start: iso(start),
+		end: iso(end),
+		login: LOGIN
+	}, null, 2)
+)
 console.log(`gh-contribs.json generated for ${LOGIN} up to ${iso(to)} — weeks:${weeks.length}`)

@@ -3,7 +3,6 @@ import React, { useEffect, useRef, useState } from "react"
 const KEY = 'asciiColorLight' as const
 
 type Props = {
-  /** Thème global de l’app */
   theme: 'light' | 'dark'
 }
 
@@ -16,7 +15,6 @@ export default function AsciiColorPicker({ theme }: Props) {
   const [open, setOpen] = useState<boolean>(false)
   const wrapRef = useRef<HTMLDivElement | null>(null)
 
-  // Ferme le panneau si clic en dehors
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       const el = wrapRef.current
