@@ -140,6 +140,34 @@ main { max-width: 1000px; margin: 0 auto; padding: 0 16px; }
 .card-surface { background: var(--card); border: 1px dashed rgba(255,255,255,.15); border-radius: 12px; padding: 16px; }
 
 /* ASCII blocks */
+
+.ascii-banner {
+  position: relative;
+  margin: 0;
+  white-space: pre;
+  font-size: 0.95rem;
+  line-height: 1.25;
+  padding: 18px;
+  border-radius: 12px;
+  border: 1px dashed var(--panel-border-color);
+  color: transparent;
+  background-image: linear-gradient(135deg, var(--skull-c1) 0%, var(--skull-c2) 30%, var(--skull-c3) 55%, var(--skull-c4) 75%, var(--skull-c5) 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: skull-gradient 18s ease-in-out infinite;
+}
+
+.ascii-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--surface-bg);
+  opacity: .9;
+  z-index: -1;
+}
+
 .ascii-box{
   white-space: pre;
   color: var(--ascii-color);
@@ -577,7 +605,8 @@ body[data-theme='light'] .sh-titlebar{
 
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr);
+  grid-template-columns: minmax(320px, 1fr) minmax(0, 1.65fr);
+  grid-template-areas: 'side main';
   gap: 20px;
 }
 
@@ -586,6 +615,7 @@ body[data-theme='light'] .sh-titlebar{
   flex-direction: column;
   gap: 20px;
   line-height: 1.5;
+  grid-area: main;
 }
 
 .hero-summary {
@@ -622,6 +652,7 @@ body[data-theme='light'] .sh-titlebar{
 .hero-side {
   display: flex;
   flex-direction: column;
+  grid-area: side;
 }
 
 .hero-side-card {
@@ -680,10 +711,23 @@ body[data-theme='light'] .sh-titlebar{
   color: var(--muted);
 }
 
+
 .hero-social-link {
   flex: 1;
   justify-content: flex-start;
+  color: var(--fg);
 }
+
+.hero-social-link svg {
+  color: var(--accent);
+  stroke: var(--accent);
+}
+
+.hero-social-link:hover svg {
+  color: var(--accent-2);
+  stroke: var(--accent-2);
+}
+
 
 /* Activity section */
 .section-heading {
@@ -790,6 +834,7 @@ body[data-theme='light'] .sh-titlebar{
 @media (max-width: 1024px) {
   .hero-grid {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'main' 'side';
   }
 }
 
