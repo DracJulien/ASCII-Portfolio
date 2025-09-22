@@ -1,5 +1,5 @@
 import { Github, Instagram, Linkedin, Menu, Moon, Mountain, Printer, Sun, Twitter, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import BackgroundRain from '@/components/BackgroundRain.jsx'
 import CloneMeButton from '@/components/CloneMeButton.jsx'
@@ -116,12 +116,116 @@ const PROJECT_ASCII = String.raw`
 [ build -> iterate -> ship ]
 `
 
-function asciiMeter(value, min, max, width = 12) {
-  const clamped = Math.min(Math.max(value, min), max)
-  const ratio = (clamped - min) / (max - min || 1)
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value))
+}
+
+function getStepPrecision(step) {
+  const parts = step.toString().split('.')
+  return parts[1] ? parts[1].length : 0
+}
+
+function snapToStep(raw, min, max, step) {
+  const precision = getStepPrecision(step)
+  const clamped = clamp(raw, min, max)
+  const steps = Math.round((clamped - min) / step)
+  const snapped = min + steps * step
+  return parseFloat(snapped.toFixed(precision))
+}
+
+function AsciiSlider({ label, value, min, max, step, onChange, display }) {
+  const range = max - min || 1
+  const ratio = clamp((value - min) / range, 0, 1)
+  const width = 12
   const filled = Math.round(ratio * width)
-  const bar = '#'.repeat(filled).padEnd(width, '.')
-  return `[${bar}]`
+  const empty = Math.max(0, width - filled)
+  const percent = Math.round(ratio * 100)
+
+  const updateFromRatio = useCallback((nextRatio) => {
+    const bounded = clamp(nextRatio, 0, 1)
+    const raw = min + bounded * range
+    const snapped = snapToStep(raw, min, max, step)
+    onChange(snapped)
+  }, [min, max, step, range, onChange])
+
+  const handlePointer = useCallback((event) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    const clientX = event.clientX
+    if (typeof clientX !== 'number' || rect.width === 0) return
+    const nextRatio = (clientX - rect.left) / rect.width
+    updateFromRatio(nextRatio)
+  }, [updateFromRatio])
+
+  const handlePointerDown = useCallback((event) => {
+    event.preventDefault()
+    event.currentTarget.focus()
+    if (event.pointerId !== undefined) {
+      event.currentTarget.setPointerCapture?.(event.pointerId)
+    }
+    handlePointer(event)
+  }, [handlePointer])
+
+  const handlePointerMove = useCallback((event) => {
+    if (event.buttons === 0) return
+    event.preventDefault()
+    handlePointer(event)
+  }, [handlePointer])
+
+  const handlePointerUp = useCallback((event) => {
+    event.currentTarget.releasePointerCapture?.(event.pointerId)
+  }, [])
+
+  const handleKeyDown = useCallback((event) => {
+    let next = value
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowDown') {
+      next = value - step
+    } else if (event.key === 'ArrowRight' || event.key === 'ArrowUp') {
+      next = value + step
+    } else if (event.key === 'PageDown') {
+      next = value - step * 5
+    } else if (event.key === 'PageUp') {
+      next = value + step * 5
+    } else if (event.key === 'Home') {
+      next = min
+    } else if (event.key === 'End') {
+      next = max
+    } else {
+      return
+    }
+
+    event.preventDefault()
+    const snapped = snapToStep(next, min, max, step)
+    onChange(snapped)
+  }, [value, min, max, step, onChange])
+
+  return (
+    <div className="ascii-slider">
+      <div className="ascii-slider-header">
+        <span>{label}</span>
+        <span className="ascii-slider-value">{display(value)}</span>
+      </div>
+      <button
+        type="button"
+        className="ascii-meter-button"
+        role="slider"
+        aria-valuemin={min}
+        aria-valuemax={max}
+        aria-valuenow={Number(value.toFixed(getStepPrecision(step)))}
+        aria-valuetext={display(value)}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onKeyDown={handleKeyDown}
+      >
+        <span className="meter-bracket" aria-hidden="true">[</span>
+        <span className="meter-fill" aria-hidden="true">{'#'.repeat(filled)}</span>
+        <span className="meter-empty" aria-hidden="true">{'.'.repeat(empty)}</span>
+        <span className="meter-bracket" aria-hidden="true">]</span>
+        <span className="meter-percent" aria-hidden="true">{percent}%</span>
+        <span className="sr-only">{display(value)}</span>
+      </button>
+    </div>
+  )
 }
 
 export default function App() {
@@ -328,53 +432,35 @@ export default function App() {
                 Control the Matrix rain background to match your focus level.
               </p>
 
-              <div className="rain-control">
-                <span>Speed {rainSpeed.toFixed(1)}x</span>
-                <div className="rain-control-input">
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="2"
-                    step="0.1"
-                    value={rainSpeed}
-                    onChange={event => setRainSpeed(parseFloat(event.target.value))}
-                    aria-label="Background rain speed"
-                  />
-                  <code className="ascii-meter">{asciiMeter(rainSpeed, 0.5, 2)}</code>
-                </div>
-              </div>
+              <AsciiSlider
+                label="Speed"
+                value={rainSpeed}
+                min={0.5}
+                max={2}
+                step={0.1}
+                display={value => `${value.toFixed(1)}x`}
+                onChange={setRainSpeed}
+              />
 
-              <div className="rain-control">
-                <span>Opacity {(panelOpacity * 100).toFixed(0)}%</span>
-                <div className="rain-control-input">
-                  <input
-                    type="range"
-                    min="0.2"
-                    max="0.85"
-                    step="0.01"
-                    value={panelOpacity}
-                    onChange={event => setPanelOpacity(parseFloat(event.target.value))}
-                    aria-label="Panel opacity"
-                  />
-                  <code className="ascii-meter">{asciiMeter(panelOpacity, 0.2, 0.85)}</code>
-                </div>
-              </div>
+              <AsciiSlider
+                label="Opacity"
+                value={panelOpacity}
+                min={0.2}
+                max={0.85}
+                step={0.01}
+                display={value => `${Math.round(value * 100)}%`}
+                onChange={setPanelOpacity}
+              />
 
-              <div className="rain-control">
-                <span>Density {rainDensity}</span>
-                <div className="rain-control-input">
-                  <input
-                    type="range"
-                    min="6"
-                    max="30"
-                    step="1"
-                    value={rainDensity}
-                    onChange={event => setRainDensity(parseInt(event.target.value, 10))}
-                    aria-label="Background rain density"
-                  />
-                  <code className="ascii-meter">{asciiMeter(rainDensity, 6, 30)}</code>
-                </div>
-              </div>
+              <AsciiSlider
+                label="Density"
+                value={rainDensity}
+                min={6}
+                max={30}
+                step={1}
+                display={value => `${Math.round(value)}`}
+                onChange={setRainDensity}
+              />
 
               <div className="rain-actions">
                 <button className="btn" onClick={() => setRainPaused(value => !value)}>{rainPaused ? 'Resume rain' : 'Pause rain'}</button>
