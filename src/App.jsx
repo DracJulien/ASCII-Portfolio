@@ -1,169 +1,414 @@
-import { Sun, Moon, Printer }   from 'lucide-react'
-import { useEffect, useState }  from 'react'
+import { Github, Instagram, Linkedin, Menu, Moon, Mountain, Printer, Sun, Twitter, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
-import Footer             from '@/components/Footer.jsx'
-import useTheme           from '@/hooks/useTheme.js'
-import ThemeSelect        from '@/components/ThemeSelect.jsx'
-import HeatmapCard        from './components/HeatmapCard'
-import ProjectCard        from '@/components/ProjectCard.jsx'
-import TerminalTabs       from '@/components/TerminalTabs.jsx'
-import CloneMeButton      from '@/components/CloneMeButton.jsx'
-import BackgroundRain     from '@/components/BackgroundRain.jsx'
-import HeatmapWithRefresh from "@/components/HeatmapWithRefresh.jsx"
+import BackgroundRain from '@/components/BackgroundRain.jsx'
+import CloneMeButton from '@/components/CloneMeButton.jsx'
+import Footer from '@/components/Footer.jsx'
+import HeatmapWithRefresh from '@/components/HeatmapWithRefresh.jsx'
+import ProjectCard from '@/components/ProjectCard.jsx'
+import TerminalTabs from '@/components/TerminalTabs.jsx'
+import AsciiSkull from '@/components/AsciiSkull.jsx'
+import ThemeSelect from '@/components/ThemeSelect.jsx'
+import useTheme from '@/hooks/useTheme.js'
 
+import pkg from '../package.json' with { type: 'json' }
 
-export default function App(){
+const APP_VERSION = pkg.version || '0.0.0'
+
+const NAV_ITEMS = [
+  { id: 'about', label: 'About' },
+  { id: 'activity', label: 'Activity' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'contact', label: 'Contact' },
+]
+
+const SOCIAL_LINKS = [
+  { href: 'https://instagram.com/juliendrac', label: 'Instagram', icon: Instagram },
+  { href: 'https://twitter.com/juliendrac', label: 'Twitter', icon: Twitter },
+  { href: 'https://github.com/Dracjulien', label: 'GitHub', icon: Github },
+  { href: 'https://www.linkedin.com/in/julien-drac', label: 'LinkedIn', icon: Linkedin },
+  { href: 'https://www.strava.com/athletes/juliendrac', label: 'Strava', icon: Mountain },
+]
+
+const SOCIAL_FRAME_PADDING = 18
+const SOCIAL_FRAME_WIDTH = Math.max(12, SOCIAL_LINKS.reduce((max, { label }) => Math.max(max, label.length), 0) + SOCIAL_FRAME_PADDING)
+const SOCIAL_FRAME_TOP = `┌${'─'.repeat(SOCIAL_FRAME_WIDTH)}┐`
+const SOCIAL_FRAME_BOTTOM = `└${'─'.repeat(SOCIAL_FRAME_WIDTH)}┘`
+
+const HERO_BANNER = String.raw`
++-------------------------------------------+
+|  JULIEN DRAC // full-stack engineer       |
+|  ascii-native product & platform builder  |
++-------------------------------------------+
+`
+
+const FOCUS_CARDS = [
+  {
+    title: 'Platform',
+    ascii: String.raw`
+  .----.
+ / __  \   release engineering
+| |  | |   observability hooks
+| |  | |   api-first workflows
+| |__| |   automation loops
+ \____/`,
+    bullets: [
+      'Design REST and event-driven APIs with contracts that last.',
+      'Automate CI/CD paths, infrastructure, and runtime diagnostics.',
+    ],
+  },
+  {
+    title: 'Front-end',
+    ascii: String.raw`
+  .--------.
+ |  <>  <> |
+ |  []  [] |
+ |    --   |
+  '--------'
+     |  |
+     '--'`,
+    bullets: [
+      'Ship responsive React apps that stay fast on any device.',
+      'Blend design systems with ASCII flair and accessibility.',
+    ],
+  },
+  {
+    title: 'Collaboration',
+    ascii: String.raw`
+[ team link ]
+| pair    |
+| mentor  |
+| document|
+'---------`,
+    bullets: [
+      'Lead discovery workshops, align architecture, and mentor devs.',
+      'Turn ideas into living documentation and iterative delivery.',
+    ],
+  },
+]
+
+const ASCII_ACTIVITY_LEGEND = String.raw`
+.------------------------.
+| activity key           |
+| [##] shipping features |
+| [==] pairing & reviews |
+| [..] discovery & docs  |
+'------------------------'
+`
+
+const ASCII_RAIN_HEADER = String.raw`
+.---------------------.
+| matrix rain console |
+'---------------------'
+`
+
+const ASCII_CONTACT_CARD = String.raw`
+.-------------------------------.
+| contact                       |
+| email: juliendrac@pm.me       |
+| github: github.com/Dracjulien |
+| linkedin: /in/julien-drac     |
+| location: Aix-en-Provence FR  |
+'-------------------------------'
+`
+
+const PROJECT_ASCII = String.raw`
+[ build -> iterate -> ship ]
+`
+
+function asciiMeter(value, min, max, width = 12) {
+  const clamped = Math.min(Math.max(value, min), max)
+  const ratio = (clamped - min) / (max - min || 1)
+  const filled = Math.round(ratio * width)
+  const bar = '#'.repeat(filled).padEnd(width, '.')
+  return `[${bar}]`
+}
+
+export default function App() {
   const { theme, toggleTheme } = useTheme()
-
-  const [active, setActive]           = useState('about')
-  const [rainSpeed, setRainSpeed]     = useState(1.0)
-  const [rainPaused, setRainPaused]   = useState(false)
+  const [navOpen, setNavOpen] = useState(false)
+  const [active, setActive] = useState('about')
+  const [panelOpacity, setPanelOpacity] = useState(0.52)
+  const [rainSpeed, setRainSpeed] = useState(1.0)
+  const [rainPaused, setRainPaused] = useState(false)
   const [rainDensity, setRainDensity] = useState(18)
   const [rainEnabled, setRainEnabled] = useState(true)
-  const data = {
-    "2025-03-02": 2,
-    "2025-03-05": 4,
-    "2025-04-01": 1,
-  }
-
-  const dates = [
-    "2025-03-02","2025-03-02","2025-03-05","2025-04-01"
-  ]
-
-  const ascii_text = [ 
-    '┌────────────────────────────────────────────────────┐',
-    '│    “I love making systems elegant, reliable,       │',
-    '│      and fun to use. From scalable backends to     │',
-    '│      refined frontends, I design end-to-end.”      │',
-    '├────────────────────────────────────────────────────┤',
-    '│                                                    │',
-    '                      :::!~!!!!!:.                   │',
-    '│                 .xUHWH!! !!?M88WHX:.               │',
-    '               .X*#M@$!!  !X!M$$$$$$WWx:.            │',
-    '│              :!!!!!!?H! :!$!$$$$$$$$$$8X:          │',       
-    '              !!~  ~:~!! :~!$!#$$$$$$$$$$8X:         │',
-    '│             :!~::!H!<   ~.U$X!?R$$$$$$$$MM!        │',
-    '              ~!~!!!!~~ .:XW$$$U!!?$$$$$$RMM!        │',
-    '│              !:~~~ .:!M"T#$$$$WX??#MRRMMM!         │',
-    '│              ~?WuxiW*`   `"#$$$$8!!!!??!!!         │',
-    '│            :X- M$$$$       `"T#$T~!8$WUXU~         │',
-    '│            :%`  ~#$$$m:        ~!~ ?$$$$$$         │',
-    '│          :!`.-   ~T$$$$8xx.  .xWW- ~""*".          │',
-    '│         ~~!    T#$$@@W@M$$$$.*?$$     /            │',
-    '│         .!~~ !!     .:XUW$W!~ `"~:    :             ',
-    '│          `!!  !H:   !WM$$$$Ti.: .!WUn+!`           │',
-    '│         X~ .: ?H.!u "$$$B$$$!W:U!T$$M~             ',
-    '│          !.-~   ?@WTWo("*$$$W$TH$! `               │',     
-    '│          -~    : ?$$$B$Wu("**$RM!                  ',
-    '│              :   ~$$$$$B$$en:`                     │',
-    '│            :     ~"##*$$$$M~                       ',
-    '│                                                    │',                     
-    '└────────────────────────────────────────────────────┘'
-  ].join('\n')
-
-  const ascii_contact =[
-    '┌────────────────────────────────────────────────────┐',
-    '     Full-Stack Developer — Node.js / React           ',
-    '     Email: juliendrac@pm.me · Aix en Provence (FR)   ',
-    '     GitHub: github.com/Dracjulien                    ',
-    '     LinkedIn: linkedin.com/in/julien-drac            ',
-    '└────────────────────────────────────────────────────┘'
-  ].join('\n')
 
   useEffect(() => {
-    const ids = ['about','projects','cv','contact']
-    const obs = new IntersectionObserver((entries) => {
-      const v = entries.filter(e => e.isIntersecting)
-        .sort((a,b)=> b.intersectionRatio - a.intersectionRatio)[0]
-      if (v) setActive(v.target.id)
+    const root = document.documentElement
+    root.style.setProperty('--card-alpha', panelOpacity.toString())
+    const asciiAlpha = Math.max(0.004, Math.min(0.08, (panelOpacity - 0.2) * 0.08))
+    root.style.setProperty('--ascii-alpha', asciiAlpha.toFixed(3))
+  }, [panelOpacity])
+
+  useEffect(() => {
+    const ids = NAV_ITEMS.map(item => item.id)
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter(entry => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+      if (visible) setActive(visible.target.id)
     }, { rootMargin: '-20% 0px -60% 0px', threshold: [0.25, 0.5, 0.75] })
-    ids.forEach(id => { const el = document.getElementById(id); if (el) obs.observe(el) })
-    return () => obs.disconnect()
+
+    ids.forEach((id) => {
+      const el = document.getElementById(id)
+      if (el) observer.observe(el)
+    })
+
+    return () => observer.disconnect()
   }, [])
+
+  useEffect(() => {
+    if (!navOpen) return
+    function handleResize() {
+      if (window.innerWidth > 900) setNavOpen(false)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [navOpen])
 
   return (
     <div className="app-root">
-      
-      {/* BACKGROUND */}
       {rainEnabled && (
         <BackgroundRain paused={rainPaused} density={rainDensity} speed={rainSpeed} />
       )}
 
-      {/* NAVBAR */}
       <header className="nav-bar">
         <nav className="nav-inner">
-          <div className="logo">[JULIEN DRAC]</div>
-          <div className="nav-links">
-            <a className={`btn ${active==='about'?'active':''}`} href="#about">About</a>
-            <a className={`btn ${active==='projects'?'active':''}`} href="#projects">Projects</a>
-            <a className={`btn ${active==='cv'?'active':''}`} href="#cv">CV</a>
-            <a className={`btn ${active==='contact'?'active':''}`} href="#contact">Contact</a>
-            <button onClick={()=>window.print()} className="btn"><Printer size={16}/>CV</button>
-            <button onClick={toggleTheme} className="btn">
-              {theme==='light' ? <Moon size={16}/> : <Sun size={16}/>}
-              {theme==='light' ? 'Dark' : 'Light'}
+          <div className="brand">
+            <button
+              type="button"
+              className="btn nav-toggle"
+              onClick={() => setNavOpen(value => !value)}
+              aria-expanded={navOpen}
+              aria-controls="main-menu"
+            >
+              {navOpen ? <X size={18} /> : <Menu size={18} />}
+              <span className="sr-only">Toggle navigation</span>
             </button>
-            <ThemeSelect theme={theme} />
-            <button className="btn" onClick={()=>setRainEnabled(v=>!v)} aria-pressed={rainEnabled}>
-              {rainEnabled ? '🌧️ Rain On' : '⛱️ Rain Off'}
-            </button>
+            <div className="logo">
+              [ASCII?PORTFOLIO]
+            </div>
+            <span className="version-tag">v{APP_VERSION}</span>
+          </div>
+
+          <div className={`nav-links ${navOpen ? 'open' : ''}`} id="main-menu">
+            <div className="nav-primary">
+              {NAV_ITEMS.map(item => (
+                <a
+                  key={item.id}
+                  className={`btn ${active === item.id ? 'active' : ''}`}
+                  href={`#${item.id}`}
+                  onClick={() => setNavOpen(false)}
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+            <div className="nav-utilities">
+              <button onClick={() => window.print()} className="btn">
+                <Printer size={16} />
+                Print CV
+              </button>
+              <button onClick={toggleTheme} className="btn">
+                {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+                {theme === 'light' ? 'Dark' : 'Light'}
+              </button>
+              <ThemeSelect theme={theme} />
+              <button
+                className="btn"
+                onClick={() => setRainEnabled(value => !value)}
+                aria-pressed={rainEnabled}
+              >
+                {rainEnabled ? 'Hide rain' : 'Show rain'}
+              </button>
+            </div>
           </div>
         </nav>
       </header>
 
-      {/* MAIN */}
       <main className="snap-container">
-        {/* ABOUT */}
-        <section id="about" className="section snap-section">
-          <div className="hero-grid">
-            <div>
-              <p className="muted">PORTFOLIO / ASCII ART</p>
-              <div className="title-row">
-                <h1 style={{ fontSize: '2.2rem', margin: '8px 0' }}>
-                  Full-Stack Developer
-                </h1>
-                <div className="title-cta">
-                  <CloneMeButton repo="https://github.com/Dracjulien/ascii-portfolio" />
-                </div>
-              </div>
-              <div className="ascii-combo">
-                <div className="ascii-combo-grid">
-                  <pre
-                    className="ascii-multi"
-                    style={{ whiteSpace:'pre', margin:0 }}
-                  >
-                    {ascii_text}
-                  </pre>
-                  
-                  <pre
-                    style={{ whiteSpace:'pre', margin:0, lineHeight:1.3 }}
-                  >
-                  {ascii_contact}
-                  </pre>
-                </div>
-              </div>
-              <HeatmapWithRefresh />
-              {/* CTA buttons */}
-              <div style={{display:'flex', gap:8, flexWrap:'wrap', marginTop:12}}>
-                <a className="btn" href="#projects">View Projects →</a>
-                <a className="btn" href="#contact">Contact ✉︎</a>
-              </div>
+        <section id="about" className="section snap-section hero-section">
+          <div className="card-surface hero-top">
+            <div className="hero-top-text">
+              <h1 className="hero-title">Julien Drac</h1>
+              <p className="hero-top-sub muted">ASCII-native product & platform builder</p>
             </div>
-            <TerminalTabs/>
+            <div className="hero-top-actions">
+              <CloneMeButton repo="https://github.com/Dracjulien/ascii-portfolio" />
+            </div>
+          </div>
+          <div className="hero-grid">
+            <article className="hero-main card-surface">
+              <p className="muted">Portfolio // ASCII interface</p>
+              <pre className="ascii-banner" aria-hidden="true">
+                {HERO_BANNER}
+              </pre>
+              <p className="hero-summary">
+                I build resilient web platforms where developer experience, product value,
+                and ASCII storytelling meet. From architecture to release, I keep teams shipping
+                calm, legible systems.
+              </p>
+              <div className="hero-actions">
+                <a className="btn" href="#projects">See projects</a>
+                <a className="btn" href="#contact">Start a conversation</a>
+              </div>
+
+              <div className="focus-grid">
+                {FOCUS_CARDS.map(card => (
+                  <article key={card.title} className="focus-card">
+                    <pre className="focus-ascii" aria-hidden="true">
+                      {card.ascii}
+                    </pre>
+                    <h3>{card.title}</h3>
+                    <ul>
+                      {card.bullets.map(item => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </article>
+                ))}
+              </div>
+            </article>
+
+            <aside className="hero-side">
+              <div className="card-surface hero-side-card">
+                <div className="ascii-skull-wrap" aria-hidden="true">
+                  <AsciiSkull />
+                </div>
+                <div className="hero-side-social">
+                  <pre className="hero-side-frame" aria-hidden="true">{SOCIAL_FRAME_TOP}</pre>
+                  <div className="hero-social-list">
+                    {SOCIAL_LINKS.map(({ href, label, icon: Icon }) => (
+                      <div className="hero-social-row" key={label}>
+                        <span className="hero-social-bar">│</span>
+                        <a
+                          className="btn hero-social-link"
+                          href={href}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          <Icon size={16} />
+                          <span>{label}</span>
+                        </a>
+                        <span className="hero-social-bar">│</span>
+                      </div>
+                    ))}
+                  </div>
+                  <pre className="hero-side-frame" aria-hidden="true">{SOCIAL_FRAME_BOTTOM}</pre>
+                </div>
+                <TerminalTabs />
+              </div>
+            </aside>
           </div>
         </section>
 
-        {/* PROJECTS */}
-        <section id="projects" className="section snap-section">
-          <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Selected Projects</h2>
+        <section id="activity" className="section snap-section activity-section">
+          <div className="section-heading">
+            <pre className="ascii-box section-ascii" aria-hidden="true">
+              {ASCII_ACTIVITY_LEGEND}
+            </pre>
+            <div>
+              <h2>Activity pulse</h2>
+              <p className="muted">
+                GitHub cadence, pairing time, and discovery work all in one glance.
+              </p>
+            </div>
+          </div>
+
+          <div className="activity-grid">
+            <div className="card-surface activity-card">
+              <HeatmapWithRefresh />
+            </div>
+            <div className="card-surface activity-card rain-card">
+              <pre className="ascii-box section-ascii" aria-hidden="true">
+                {ASCII_RAIN_HEADER}
+              </pre>
+              <p className="muted">
+                Control the Matrix rain background to match your focus level.
+              </p>
+
+              <div className="rain-control">
+                <span>Speed {rainSpeed.toFixed(1)}x</span>
+                <div className="rain-control-input">
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2"
+                    step="0.1"
+                    value={rainSpeed}
+                    onChange={event => setRainSpeed(parseFloat(event.target.value))}
+                    aria-label="Background rain speed"
+                  />
+                  <code className="ascii-meter">{asciiMeter(rainSpeed, 0.5, 2)}</code>
+                </div>
+              </div>
+
+              <div className="rain-control">
+                <span>Opacity {(panelOpacity * 100).toFixed(0)}%</span>
+                <div className="rain-control-input">
+                  <input
+                    type="range"
+                    min="0.2"
+                    max="0.85"
+                    step="0.01"
+                    value={panelOpacity}
+                    onChange={event => setPanelOpacity(parseFloat(event.target.value))}
+                    aria-label="Panel opacity"
+                  />
+                  <code className="ascii-meter">{asciiMeter(panelOpacity, 0.2, 0.85)}</code>
+                </div>
+              </div>
+
+              <div className="rain-control">
+                <span>Density {rainDensity}</span>
+                <div className="rain-control-input">
+                  <input
+                    type="range"
+                    min="6"
+                    max="30"
+                    step="1"
+                    value={rainDensity}
+                    onChange={event => setRainDensity(parseInt(event.target.value, 10))}
+                    aria-label="Background rain density"
+                  />
+                  <code className="ascii-meter">{asciiMeter(rainDensity, 6, 30)}</code>
+                </div>
+              </div>
+
+              <div className="rain-actions">
+                <button className="btn" onClick={() => setRainPaused(value => !value)}>{rainPaused ? 'Resume rain' : 'Pause rain'}</button>
+                <button className="btn" onClick={() => setRainEnabled(value => !value)}>{rainEnabled ? 'Disable rain' : 'Enable rain'}</button>
+              </div>
+
+              <small className="muted">
+                Rain values persist for your session and keep the hero readable on any screen.
+              </small>
+            </div>
+          </div>
+        </section>
+
+        <section id="projects" className="section snap-section projects-section">
+          <div className="section-heading">
+            <pre className="ascii-box section-ascii" aria-hidden="true">
+              {PROJECT_ASCII}
+            </pre>
+            <div>
+              <h2>Selected projects</h2>
+              <p className="muted">
+                A few highlights that mix platform reliability with front-end delight.
+              </p>
+            </div>
+          </div>
+
           <div className="cards-grid">
             <ProjectCard
-              title="Pokémon TCG Pocket Exchange"
+              title="Pokemon TCG Pocket Exchange"
               status="[dev]"
-              badges={['NestJS','PostgreSQL','React','Tailwind','Mobile']}
-              description="B2C platform to list, trade and track collections. Multi-repo, REST API, JWT auth, secure uploads."
+              badges={['NestJS', 'PostgreSQL', 'React', 'Tailwind', 'Mobile']}
+              description="B2C platform to list, trade, and track collections. Multi-repo setup with REST API, JWT auth, secure uploads."
               code={`
-<span class="path">PS C:\\\\Victor&gt;</span> <span class="cmd">Invoke-RestMethod</span> -Uri "https://api.example.com/trades?status=open" | ConvertTo-Json
+<span class="path">PS C:\Victor&gt;</span> <span class="cmd">Invoke-RestMethod</span> -Uri "https://api.example.com/trades?status=open" | ConvertTo-Json
 {
   "items": [{"id":"TR-8721","want":["Pikachu #25"],"give":["Eevee #133"],"owner":"@julien"}],
   "meta":{"count":1}
@@ -171,23 +416,23 @@ export default function App(){
               `.trim()}
             />
             <ProjectCard
-              title="Book Microsite — Slides & Typo"
+              title="Book Microsite // Slides & Typo"
               status="[R&D]"
-              badges={['HTML/CSS/JS','Slide effect','Minimal']}
+              badges={['HTML/CSS/JS', 'Scroll snaps', 'Minimal']}
               description="Micro-interactions, scroll slides, elegant typography, lightweight bundle."
               code={`
-<span class="path">PS C:\\\\BookSite&gt;</span> <span class="cmd">type</span> styles.css | <span class="cmd">Select-String</span> "scroll-snap"
+<span class="path">PS C:\BookSite&gt;</span> <span class="cmd">type</span> styles.css | <span class="cmd">Select-String</span> "scroll-snap"
 .container{scroll-snap-type:y mandatory}
 section{scroll-snap-align:start}
               `.trim()}
             />
             <ProjectCard
-              title="CI/CD — SaaS Monorepo"
+              title="CI/CD // SaaS Monorepo"
               status="[prod]"
-              badges={['Turborepo','GitHub Actions','Docker']}
-              description="Cache-aware pipelines, build matrices, PR previews, SAST/DAST scans."
+              badges={['Turborepo', 'GitHub Actions', 'Docker']}
+              description="Cache-aware pipelines, build matrices, PR previews, and continuous security scans."
               code={`
-<span class="path">PS C:\\\\CI&gt;</span> <span class="cmd">cat</span> .github/workflows/ci.yml
+<span class="path">PS C:\CI&gt;</span> <span class="cmd">cat</span> .github/workflows/ci.yml
 name: ci
 on: [push, pull_request]
 jobs:
@@ -202,36 +447,51 @@ jobs:
           </div>
         </section>
 
-        {/* CV */}
-        <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Curriculum Vitae — Julien</h2>
+        <section id="contact" className="section snap-section contact-section">
+          <div className="section-heading">
+            <h2>Contact</h2>
+            <p className="muted">
+              Use the form or the direct links below to start a project or chat.
+            </p>
+          </div>
 
-        <pre className="ascii-box ascii-multi">
-          {ascii_contact}
-        </pre>
+          <div className="contact-grid">
+            <pre className="ascii-box contact-ascii" aria-hidden="true">
+              {ASCII_CONTACT_CARD}
+            </pre>
 
-        {/* CONTACT */}
-        <section id="contact" className="section snap-section">
-          <h2 style={{fontSize:'1.25rem', margin:'0 0 10px'}}>Contact</h2>
-          <div className="card-surface">
-            <p>Use the form (Formspree) or email me directly.</p>
-            <form method="POST" action="https://formspree.io/f/yourFormID" className="section" style={{margin:'12px 0 0', padding:0}}>
-              <div style={{display:'grid', gap:10, maxWidth:680}}>
-                <label>Name<br/><input name="name" required className="btn" style={{width:'100%'}}/></label>
-                <label>Email<br/><input type="email" name="email" required className="btn" style={{width:'100%'}}/></label>
-                <label>Message<br/><textarea name="message" rows={5} required className="btn" style={{width:'100%'}}/></label>
-                <input type="text" name="_gotcha" style={{display:'none'}} tabIndex={-1} autoComplete="off" />
-                <div style={{display:'flex', gap:10, alignItems:'center', flexWrap:'wrap'}}>
-                  <button className="btn" type="submit">Send</button>
-                  <span className="btn" style={{pointerEvents:'none'}}>juliendrac@pm.me</span>
-                  <a className="btn" href="mailto:juliendrac@pm.me">Open Mail</a>
+            <div className="card-surface contact-form">
+              <form method="POST" action="https://formspree.io/f/yourFormID">
+                <div className="form-grid">
+                  <label>
+                    Name
+                    <input name="name" required className="input" />
+                  </label>
+                  <label>
+                    Email
+                    <input type="email" name="email" required className="input" />
+                  </label>
+                  <label className="form-full">
+                    Message
+                    <textarea name="message" rows={5} required className="input" />
+                  </label>
+                  <input type="text" name="_gotcha" tabIndex={-1} autoComplete="off" className="hidden" />
+                  <div className="contact-actions">
+                    <button className="btn" type="submit">Send message</button>
+                    <a className="btn" href="mailto:juliendrac@pm.me">Open mail app</a>
+                    <button type="button" className="btn" onClick={() => window.print()}>
+                      <Printer size={16} />
+                      Print CV
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </section>
       </main>
-      <Footer/>
+
+      <Footer />
     </div>
   )
 }
-

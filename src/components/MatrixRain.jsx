@@ -1,13 +1,17 @@
 import { useEffect, useRef } from "react"
 
 export default function MatrixRain({
-  density = 10,   
-  speed = 1,      
-  trail = 0.08,   
-  fontSize = 14,  
-  className = ""
+  density = 10,
+  speed = 1,
+  trail = 0.08,
+  fontSize = 14,
+  className = '',
+  paused = false,
 }) {
   const ref = useRef(null)
+  const pausedRef = useRef(paused)
+
+  useEffect(() => { pausedRef.current = paused }, [paused])
 
   useEffect(() => {
     const cvs = ref.current
@@ -42,16 +46,18 @@ export default function MatrixRain({
     const draw = () => {
 		({ color, trailRgb } = readVars())
 
-      ctx.fillStyle = `rgba(${trailRgb},${trail})`
-      ctx.fillRect(0,0,w,h)
+      if (!pausedRef.current) {
+        ctx.fillStyle = `rgba(${trailRgb},${trail})`
+        ctx.fillRect(0,0,w,h)
 
-      ctx.fillStyle = color
-      ctx.font = `${fontSize}px ui-monospace, Menlo, Consolas, monospace`
-      const step = Math.max(1, density * speed)
-      for (let i=0; i<cols; i++){
-        const ch = chars[(Math.random()*chars.length)|0]
-        ctx.fillText(ch, i*density, yPos[i])
-        yPos[i] = (yPos[i] > h || Math.random() > 0.975) ? 0 : yPos[i] + step
+        ctx.fillStyle = color
+        ctx.font = `${fontSize}px ui-monospace, Menlo, Consolas, monospace`
+        const step = Math.max(1, density * speed)
+        for (let i=0; i<cols; i++){
+          const ch = chars[(Math.random()*chars.length)|0]
+          ctx.fillText(ch, i*density, yPos[i])
+          yPos[i] = (yPos[i] > h || Math.random() > 0.975) ? 0 : yPos[i] + step
+        }
       }
       raf = requestAnimationFrame(draw)
     }

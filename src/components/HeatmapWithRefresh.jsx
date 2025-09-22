@@ -1,29 +1,28 @@
-import { useState } from "react"
-import HeatmapCard from "@/components/HeatmapCard.jsx"
+import { useState } from 'react'
+import HeatmapCard from '@/components/HeatmapCard.jsx'
 
-export default function HeatmapWithRefresh(){
-	const [ts, setTs] = useState(0)
-	const [loading, setLoading] = useState(false)
+export default function HeatmapWithRefresh() {
+  const [timestamp, setTimestamp] = useState(Date.now())
+  const [loading, setLoading] = useState(false)
 
-	function refresh(){
-		setLoading(true)
-		setTs(Date.now())               // change l’URL → re-fetch
-		setTimeout(() => setLoading(false), 600)
-	}
+  function refresh() {
+    setLoading(true)
+    setTimestamp(Date.now())
+    setTimeout(() => setLoading(false), 600)
+  }
 
-	return (
-		<div>
-			<div style={{display:"flex", justifyContent:"flex-end", gap:8, marginBottom:8}}>
-				<button className="btn" onClick={refresh} disabled={loading}>
-					{loading ? "Fetching…" : "Refresh contributions"}
-				</button>
-			</div>
-
-			<HeatmapCard
-				src={`/gh-contribs.json?t=${ts}`}  // bust cache à chaque clic
-				baseVar="--accent"
-				className="mt-2"
-			/>
-		</div>
-	)
+  return (
+    <div className="heatmap-wrapper">
+      <div className="heatmap-actions">
+        <button className="btn" onClick={refresh} disabled={loading}>
+          {loading ? 'Fetching...' : 'Refresh contributions'}
+        </button>
+      </div>
+      <HeatmapCard
+        src={`/gh-contribs.json?t=${timestamp}`}
+        baseVar="--accent"
+        className="heatmap-card"
+      />
+    </div>
+  )
 }
