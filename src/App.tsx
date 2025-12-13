@@ -1,6 +1,6 @@
 // src/App.tsx
 import { JSX, useEffect, useState } from "react"
-import { Sun, Moon, Printer } from "lucide-react"
+import { Sun, Moon, CloudRain, CloudOff } from "lucide-react"
 
 import useTheme from "@/hooks/useTheme"
 import Footer from "@/components/Footer"
@@ -65,14 +65,25 @@ export default function App(): JSX.Element {
     "└────────────────────────────────────────────────────┘",
   ].join("\n")
 
-  const ascii_contact: string = [
-    "┌────────────────────────────────────────────────────┐",
-    "     Full-Stack Developer — Node.js / React           ",
-    "     Email: julien@seagle.io · Aix en Provence (FR)   ",
-    "     GitHub: github.com/Dracjulien                    ",
-    "     LinkedIn: linkedin.com/in/julien-drac            ",
-    "└────────────────────────────────────────────────────┘",
-  ].join("\n")
+  const AsciiContact = () => (
+    <>
+      {"┌────────────────────────────────────────────────────┐\n"}
+      {"     Full-Stack Developer — Node.js / React           \n"}
+      {"     Email: julien@seagle.io · Aix en Provence (FR)   \n"}
+      {"     GitHub: github.com/Dracjulien                    \n"}
+      {"     LinkedIn: "}
+      <a
+        href="https://linkedin.com/in/julien-drac"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="ascii-link"
+      >
+        linkedin.com/in/julien-drac
+      </a>
+      {"            \n"}
+      {"└────────────────────────────────────────────────────┘"}
+    </>
+  )
 
   useEffect(() => {
     const ids: SectionId[] = ["about", "projects", "cv", "contact"]
@@ -114,10 +125,6 @@ export default function App(): JSX.Element {
             <a className={`btn ${active === "contact" ? "active" : ""}`} href="#contact">
               Contact
             </a>
-            <button onClick={() => window.print()} className="btn">
-              <Printer size={16} />
-              CV
-            </button>
             <button onClick={toggleTheme} className="btn">
               {theme === "light" ? <Moon size={16} /> : <Sun size={16} />}
               {theme === "light" ? "Dark" : "Light"}
@@ -128,7 +135,8 @@ export default function App(): JSX.Element {
               onClick={() => setRainEnabled((v) => !v)}
               aria-pressed={rainEnabled}
             >
-              {rainEnabled ? "🌧️ Rain On" : "⛱️ Rain Off"}
+              {rainEnabled ? <CloudRain size={16} /> : <CloudOff size={16} />}
+              {rainEnabled ? "Rain On" : "Rain Off"}
             </button>
           </div>
         </nav>
@@ -155,12 +163,12 @@ export default function App(): JSX.Element {
                     {ascii_text}
                   </pre>
                   <pre style={{ whiteSpace: "pre", margin: 0, lineHeight: 1.3 }}>
-                    {ascii_contact}
+                    <AsciiContact />
                   </pre>
                 </div>
               </div>
 
-              <HeatmapCard className="mt-2" />
+              <HeatmapCard style={{ marginTop: 12 }} />
 
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
                 <a className="btn" href="#projects">
@@ -228,7 +236,7 @@ jobs:
           Curriculum Vitae — Julien
         </h2>
 
-        <pre className="ascii-box ascii-multi">{ascii_contact}</pre>
+        <pre className="ascii-box ascii-multi"><AsciiContact /></pre>
 
         <section id="contact" className="section snap-section">
           <h2 style={{ fontSize: "1.25rem", margin: "0 0 10px" }}>Contact</h2>

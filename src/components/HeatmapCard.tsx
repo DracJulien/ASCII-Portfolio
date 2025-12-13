@@ -46,6 +46,7 @@ export default function HeatmapCard({
   baseVar = "--accent",        // ou "--accent-2"
   weeksFallback = 53,
   className = "",
+  style = {},
 }) {
   const [weeks, setWeeks] = useState<WeeksGrid>([])
   const [months, setMonths] = useState<MonthLabel[]>([])
@@ -147,7 +148,7 @@ export default function HeatmapCard({
   }, [meta.from, meta.asOf, dateFormatter])
 
   return (
-    <div className={className}>
+    <div className={className} style={style}>
       <div className="gh-card">
         <div className="gh-header">
           <div className="text-sm" style={{ opacity: .8 }}>Contributions (rolling year)</div>

@@ -1,5 +1,6 @@
 // src/components/ThemeSelect.jsx
 import { useEffect, useState } from "react"
+import { Palette, ChevronDown } from "lucide-react"
 
 const PRESET_KEY = "presetName"
 
@@ -9,14 +10,14 @@ const PRESETS = {
     dark: {
       accent: "#7aa2f7", accent2: "#f7768e",
       rainColor: "#7aa2f7", trailRgb: "0,0,0",
-      skull: ["#7aa2f7","#a78bfa","#f472b6","#f59e0b","#34d399"],
+      skull: ["#7aa2f7", "#a78bfa", "#f472b6", "#f59e0b", "#34d399"],
       asciiDark: "#9aa0a6",
       asciiLight: "#374151",
     },
     light: {
       accent: "#3a72ff", accent2: "#d14b73",
       rainColor: "#1f2937", trailRgb: "255,255,255",
-      skull: ["#0ea5e9","#8b5cf6","#ec4899","#f59e0b","#10b981"],
+      skull: ["#0ea5e9", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"],
       asciiDark: "#6b7280",
       asciiLight: "#374151",
     }
@@ -26,14 +27,14 @@ const PRESETS = {
     dark: {
       accent: "#38bdf8", accent2: "#22d3ee",
       rainColor: "#60a5fa", trailRgb: "0,7,20",
-      skull: ["#38bdf8","#60a5fa","#22d3ee","#06b6d4","#14b8a6"],
+      skull: ["#38bdf8", "#60a5fa", "#22d3ee", "#06b6d4", "#14b8a6"],
       asciiDark: "#94a3b8",
       asciiLight: "#0f172a",
     },
     light: {
       accent: "#0ea5e9", accent2: "#06b6d4",
       rainColor: "#0f172a", trailRgb: "255,255,255",
-      skull: ["#0ea5e9","#38bdf8","#22d3ee","#06b6d4","#14b8a6"],
+      skull: ["#0ea5e9", "#38bdf8", "#22d3ee", "#06b6d4", "#14b8a6"],
       asciiDark: "#475569",
       asciiLight: "#0f172a",
     }
@@ -43,14 +44,14 @@ const PRESETS = {
     dark: {
       accent: "#fb7185", accent2: "#f59e0b",
       rainColor: "#f472b6", trailRgb: "15,0,5",
-      skull: ["#fb7185","#f472b6","#f59e0b","#fbbf24","#fca5a5"],
+      skull: ["#fb7185", "#f472b6", "#f59e0b", "#fbbf24", "#fca5a5"],
       asciiDark: "#eab308",
       asciiLight: "#3f1d0b",
     },
     light: {
       accent: "#e11d48", accent2: "#f97316",
       rainColor: "#111827", trailRgb: "255,255,255",
-      skull: ["#e11d48","#ec4899","#f59e0b","#f97316","#ef4444"],
+      skull: ["#e11d48", "#ec4899", "#f59e0b", "#f97316", "#ef4444"],
       asciiDark: "#b45309",
       asciiLight: "#3f1d0b",
     }
@@ -60,14 +61,14 @@ const PRESETS = {
     dark: {
       accent: "#22c55e", accent2: "#84cc16",
       rainColor: "#22c55e", trailRgb: "0,0,0",
-      skull: ["#22c55e","#84cc16","#a3e635","#4ade80","#16a34a"],
+      skull: ["#22c55e", "#84cc16", "#a3e635", "#4ade80", "#16a34a"],
       asciiDark: "#86efac",
       asciiLight: "#065f46",
     },
     light: {
       accent: "#16a34a", accent2: "#65a30d",
       rainColor: "#0f172a", trailRgb: "255,255,255",
-      skull: ["#16a34a","#65a30d","#22c55e","#84cc16","#a3e635"],
+      skull: ["#16a34a", "#65a30d", "#22c55e", "#84cc16", "#a3e635"],
       asciiDark: "#16a34a",
       asciiLight: "#065f46",
     }
@@ -77,14 +78,14 @@ const PRESETS = {
     dark: {
       accent: "#a78bfa", accent2: "#f472b6",
       rainColor: "#93c5fd", trailRgb: "10,0,25",
-      skull: ["#8b5cf6","#a78bfa","#ec4899","#06b6d4","#22d3ee"],
+      skull: ["#8b5cf6", "#a78bfa", "#ec4899", "#06b6d4", "#22d3ee"],
       asciiDark: "#c084fc",
       asciiLight: "#6b21a8",
     },
     light: {
       accent: "#8b5cf6", accent2: "#ec4899",
       rainColor: "#1f2937", trailRgb: "255,255,255",
-      skull: ["#8b5cf6","#a78bfa","#ec4899","#06b6d4","#22d3ee"],
+      skull: ["#8b5cf6", "#a78bfa", "#ec4899", "#06b6d4", "#22d3ee"],
       asciiDark: "#7e22ce",
       asciiLight: "#6b21a8",
     }
@@ -94,26 +95,26 @@ const PRESETS = {
     dark: {
       accent: "#cbd5e1", accent2: "#94a3b8",
       rainColor: "#e5e7eb", trailRgb: "0,0,0",
-      skull: ["#9ca3af","#a1a1aa","#d4d4d8","#e5e7eb","#94a3b8"],
+      skull: ["#9ca3af", "#a1a1aa", "#d4d4d8", "#e5e7eb", "#94a3b8"],
       asciiDark: "#cbd5e1",
       asciiLight: "#374151",
     },
     light: {
       accent: "#334155", accent2: "#64748b",
       rainColor: "#1f2937", trailRgb: "255,255,255",
-      skull: ["#374151","#4b5563","#6b7280","#9ca3af","#111827"],
+      skull: ["#374151", "#4b5563", "#6b7280", "#9ca3af", "#111827"],
       asciiDark: "#334155",
       asciiLight: "#374151",
     }
   },
 }
 
-function applyVars(vars, mode){
+function applyVars(vars, mode) {
   document.body.style.setProperty('--accent', vars.accent)
   document.body.style.setProperty('--accent-2', vars.accent2)
   document.body.style.setProperty('--rain-color', vars.rainColor)
   document.body.style.setProperty('--rain-trail-rgb', vars.trailRgb)
-  const [c1,c2,c3,c4,c5] = vars.skull
+  const [c1, c2, c3, c4, c5] = vars.skull
   document.body.style.setProperty('--skull-c1', c1)
   document.body.style.setProperty('--skull-c2', c2)
   document.body.style.setProperty('--skull-c3', c3)
@@ -127,7 +128,7 @@ function applyVars(vars, mode){
   }
 }
 
-const gradientStyle = (colors, w=60, h=10) => ({
+const gradientStyle = (colors, w = 60, h = 10) => ({
   width: w, height: h, borderRadius: 999,
   backgroundImage: `linear-gradient(90deg, ${colors.join(',')})`,
   boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.15), 0 0 0 1px rgba(0,0,0,.2)'
@@ -137,7 +138,7 @@ const dot = (c) => ({
   boxShadow: 'inset 0 0 0 1px rgba(255,255,255,.2), 0 0 0 1px rgba(0,0,0,.25)'
 })
 
-export default function ThemeSelect({ theme }){
+export default function ThemeSelect({ theme }) {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState(localStorage.getItem(PRESET_KEY) || 'default')
 
@@ -150,24 +151,24 @@ export default function ThemeSelect({ theme }){
   const current = (PRESETS[name] || PRESETS.default)[theme]
 
   const panelStyle = {
-    position:'absolute', right:0, top:'100%', marginTop:8, zIndex:60,
-    background:'var(--card)', color:'var(--fg)',
-    border:'1px dashed rgba(255,255,255,.2)', borderRadius:12, padding:10, width:260,
-    boxShadow:'0 6px 24px rgba(0,0,0,.25)'
+    position: 'absolute', right: 0, top: '100%', marginTop: 8, zIndex: 60,
+    background: 'var(--card)', color: 'var(--fg)',
+    border: '1px dashed rgba(255,255,255,.2)', borderRadius: 12, padding: 10, width: 260,
+    boxShadow: '0 6px 24px rgba(0,0,0,.25)'
   }
-  const row = { display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }
+  const row = { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }
 
   return (
-    <div style={{position:'relative'}}>
+    <div style={{ position: 'relative' }}>
       {/* === Bouton avec preview (dégradé skull + pastilles accent/rain) === */}
-      <button className="btn" onClick={()=>setOpen(o=>!o)} aria-haspopup="listbox" aria-expanded={open}>
-        🎨 Theme
-        <span style={{display:'inline-flex', alignItems:'center', gap:8, marginLeft:8}}>
+      <button className="btn" onClick={() => setOpen(o => !o)} aria-haspopup="listbox" aria-expanded={open}>
+        <Palette size={16} /> Theme
+        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, marginLeft: 8 }}>
           <span style={gradientStyle(current.skull, 56, 8)} />
           <span style={dot(current.accent)} />
           <span style={dot(current.rainColor)} />
         </span>
-        ▾
+        <ChevronDown size={14} style={{ opacity: 0.5 }} />
       </button>
 
       {open && (
@@ -178,12 +179,12 @@ export default function ThemeSelect({ theme }){
               <button
                 key={key}
                 className="btn"
-                style={{ ...row, width:'100%', marginBottom:6, borderColor: key===name ? 'var(--accent)' : 'rgba(255,255,255,.2)' }}
+                style={{ ...row, width: '100%', marginBottom: 6, borderColor: key === name ? 'var(--accent)' : 'rgba(255,255,255,.2)' }}
                 onClick={() => { setName(key); setOpen(false) }}
-                aria-selected={key===name}
+                aria-selected={key === name}
               >
                 <span>{p.label}</span>
-                <span style={{display:'inline-flex', alignItems:'center', gap:8}}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
                   <span style={gradientStyle(v.skull)} />
                   <span title="Accent" style={dot(v.accent)} />
                   <span title="Rain" style={dot(v.rainColor)} />
