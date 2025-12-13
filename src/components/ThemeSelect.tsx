@@ -146,6 +146,7 @@ export default function ThemeSelect({ theme }) {
     const preset = PRESETS[name] || PRESETS.default
     applyVars(preset[theme], theme)
     localStorage.setItem(PRESET_KEY, name)
+    document.body.dataset.preset = name
   }, [name, theme])
 
   const current = (PRESETS[name] || PRESETS.default)[theme]

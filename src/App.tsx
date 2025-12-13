@@ -1,6 +1,6 @@
 // src/App.tsx
 import { JSX, useEffect, useState } from "react"
-import { Sun, Moon, CloudRain, CloudOff } from "lucide-react"
+import { Sun, Moon, CloudRain, CloudOff, Mail, Github, Linkedin, Terminal } from "lucide-react"
 
 import useTheme from "@/hooks/useTheme"
 import Footer from "@/components/Footer"
@@ -34,12 +34,7 @@ export default function App(): JSX.Element {
   const [rainEnabled, setRainEnabled] = useState<boolean>(true)
   const [effects, setEffects] = useState<string[]>([])
 
-  const ascii_text: string = [
-    "┌────────────────────────────────────────────────────┐",
-    "│    “I love making systems elegant, reliable,       │",
-    "│      and fun to use. From scalable backends to     │",
-    "│      refined frontends, I design end-to-end.”      │",
-    "├────────────────────────────────────────────────────┤",
+  const skull_art = [
     "│                                                    │",
     "                      :::!~!!!!!:.                   │",
     "│                 .xUHWH!! !!?M88WHX:.               │",
@@ -65,22 +60,60 @@ export default function App(): JSX.Element {
     "└────────────────────────────────────────────────────┘",
   ].join("\n")
 
+  const AsciiArt = () => (
+    <>
+      {"┌────────────────────────────────────────────────────┐\n"}
+      {"│    "}
+      <span className="ascii-text-highlight">“I love making systems elegant, reliable,</span>
+      {"       │\n"}
+      {"│      "}
+      <span className="ascii-text-highlight">and fun to use. From scalable backends to</span>
+      {"     │\n"}
+      {"│      "}
+      <span className="ascii-text-highlight">refined frontends, I design end-to-end.”</span>
+      {"      │\n"}
+      {"├────────────────────────────────────────────────────┤\n"}
+      {skull_art}
+    </>
+  )
+
   const AsciiContact = () => (
     <>
       {"┌────────────────────────────────────────────────────┐\n"}
-      {"     Full-Stack Developer — Node.js / React           \n"}
-      {"     Email: julien@seagle.io · Aix en Provence (FR)   \n"}
-      {"     GitHub: github.com/Dracjulien                    \n"}
-      {"     LinkedIn: "}
+      {"     "}
+      <Terminal size={14} className="hero-icon" />
+      {" Full-Stack Developer — Node.js / React           \n"}
+      {"     "}
+      <Mail size={14} className="hero-icon" />
+      {" "}
+      <a href="mailto:julien@seagle.io" className="ascii-link link-mail">
+        julien@seagle.io
+      </a>
+      {" · Aix en Provence (FR)        \n"}
+      {"     "}
+      <Github size={14} className="hero-icon" />
+      {" "}
+      <a
+        href="https://github.com/Dracjulien"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="ascii-link link-github"
+      >
+        github.com/Dracjulien
+      </a>
+      {"                          \n"}
+      {"     "}
+      <Linkedin size={14} className="hero-icon" />
+      {" "}
       <a
         href="https://linkedin.com/in/julien-drac"
         target="_blank"
         rel="noopener noreferrer"
-        className="ascii-link"
+        className="ascii-link link-linkedin"
       >
         linkedin.com/in/julien-drac
       </a>
-      {"            \n"}
+      {"                  \n"}
       {"└────────────────────────────────────────────────────┘"}
     </>
   )
@@ -118,9 +151,6 @@ export default function App(): JSX.Element {
             </a>
             <a className={`btn ${active === "projects" ? "active" : ""}`} href="#projects">
               Projects
-            </a>
-            <a className={`btn ${active === "cv" ? "active" : ""}`} href="#cv">
-              CV
             </a>
             <a className={`btn ${active === "contact" ? "active" : ""}`} href="#contact">
               Contact
@@ -160,7 +190,7 @@ export default function App(): JSX.Element {
               <div className="ascii-combo">
                 <div className="ascii-combo-grid">
                   <pre className="ascii-multi" style={{ whiteSpace: "pre", margin: 0 }}>
-                    {ascii_text}
+                    <AsciiArt />
                   </pre>
                   <pre style={{ whiteSpace: "pre", margin: 0, lineHeight: 1.3 }}>
                     <AsciiContact />
