@@ -4,35 +4,35 @@ type WeekColumn = Array<number | null>
 type WeeksGrid = WeekColumn[]
 type MonthLabel = { index: number; label: string }
 
-function alignToMonday(date: Date){
+function alignToMonday(date: Date) {
   const aligned = new Date(date)
   const day = aligned.getDay()
   const delta = day === 1 ? 0 : (day === 0 ? -6 : 1 - day)
   aligned.setDate(aligned.getDate() + delta)
-  aligned.setHours(0,0,0,0)
+  aligned.setHours(0, 0, 0, 0)
   return aligned
 }
 
-function alignToSunday(date: Date){
+function alignToSunday(date: Date) {
   const aligned = new Date(date)
   const day = aligned.getDay()
   const delta = day === 0 ? 0 : 7 - day
   aligned.setDate(aligned.getDate() + delta)
-  aligned.setHours(0,0,0,0)
+  aligned.setHours(0, 0, 0, 0)
   return aligned
 }
 
-function cssVar(name: string, fallback="#22c55e"){
+function cssVar(name: string, fallback = "#22c55e") {
   const v = getComputedStyle(document.body).getPropertyValue(name).trim()
   return v || fallback
 }
-function hexToRgb(hex: string){
-  const m = hex.replace("#","")
-  const v = m.length===3 ? m.split("").map(x=>x+x).join("") : m
-  const n = parseInt(v,16)
-  return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 }
+function hexToRgb(hex: string) {
+  const m = hex.replace("#", "")
+  const v = m.length === 3 ? m.split("").map(x => x + x).join("") : m
+  const n = parseInt(v, 16)
+  return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 }
 }
-function rgba(hex: string, a: number){ const {r,g,b} = hexToRgb(hex); return `rgba(${r},${g},${b},${a})` }
+function rgba(hex: string, a: number) { const { r, g, b } = hexToRgb(hex); return `rgba(${r},${g},${b},${a})` }
 
 type HeatmapMeta = {
   from?: string
@@ -46,7 +46,7 @@ export default function HeatmapCard({
   baseVar = "--accent",        // ou "--accent-2"
   weeksFallback = 53,
   className = "",
-}){
+}) {
   const [weeks, setWeeks] = useState<WeeksGrid>([])
   const [months, setMonths] = useState<MonthLabel[]>([])
   const [meta, setMeta] = useState<HeatmapMeta>({})
@@ -58,8 +58,8 @@ export default function HeatmapCard({
       .then(r => r.ok ? r.json() : { weeks: [], months: [] })
       .then(j => {
         if (cancel) return
-        let w = j.weeks && j.weeks.length ? j.weeks : Array.from({length:weeksFallback},()=>Array(7).fill(0))
-        if (Array.isArray(w) && w.length < weeksFallback){
+        let w = j.weeks && j.weeks.length ? j.weeks : Array.from({ length: weeksFallback }, () => Array(7).fill(0))
+        if (Array.isArray(w) && w.length < weeksFallback) {
           const missing = weeksFallback - w.length
           const pad = Array.from({ length: missing }, () => Array(7).fill(null))
           w = [...pad, ...w]
@@ -76,7 +76,7 @@ export default function HeatmapCard({
       })
       .catch(() => {
         if (cancel) return
-        setWeeks(Array.from({length:weeksFallback},()=>Array(7).fill(0)))
+        setWeeks(Array.from({ length: weeksFallback }, () => Array(7).fill(0)))
         setMonths(autoMonths(weeksFallback))
         setMeta({})
       })
@@ -84,35 +84,35 @@ export default function HeatmapCard({
   }, [src, weeksFallback])
 
   useEffect(() => {
-    const mo = new MutationObserver(() => setTick(t => t+1))
-    mo.observe(document.body, { attributes:true, attributeFilter:["style","data-theme","class"] })
+    const mo = new MutationObserver(() => setTick(t => t + 1))
+    mo.observe(document.body, { attributes: true, attributeFilter: ["style", "data-theme", "class"] })
     return () => mo.disconnect()
   }, [])
 
   const accent = cssVar(baseVar, "#22c55e") // re-lu à chaque tick
   const palette = useMemo(() => [
-    rgba(accent,.15), rgba(accent,.35), rgba(accent,.55), rgba(accent,.78), rgba(accent,1)
+    rgba(accent, .15), rgba(accent, .35), rgba(accent, .55), rgba(accent, .78), rgba(accent, 1)
   ], [accent, tick])
 
   const CELL = 12, GAP = 2
   const empty = "var(--gh-empty, rgba(255,255,255,.08))"
   const dateFormatter = useMemo(() => new Intl.DateTimeFormat(undefined, { dateStyle: "medium" }), [])
   const startDate = useMemo(() => {
-    if (meta.start){
+    if (meta.start) {
       const d = new Date(meta.start)
       if (!Number.isNaN(d.getTime())) return alignToMonday(d)
     }
     const endSource = meta.end || meta.asOf
-    if (endSource){
+    if (endSource) {
       const endDate = new Date(endSource)
-      if (!Number.isNaN(endDate.getTime())){
+      if (!Number.isNaN(endDate.getTime())) {
         const alignedEnd = alignToSunday(endDate)
         const start = new Date(alignedEnd)
         start.setDate(start.getDate() - (weeks.length * 7 - 1))
         return alignToMonday(start)
       }
     }
-    if (weeks.length){
+    if (weeks.length) {
       const alignedEnd = alignToSunday(new Date())
       const start = new Date(alignedEnd)
       start.setDate(start.getDate() - (weeks.length * 7 - 1))
@@ -122,15 +122,15 @@ export default function HeatmapCard({
   }, [meta.start, meta.end, meta.asOf, weeks.length])
 
   const monthLabels = useMemo(() => {
-    if (startDate){
+    if (startDate) {
       const out: MonthLabel[] = []
       let prev = -1
-      for (let i = 0; i < weeks.length; i++){
+      for (let i = 0; i < weeks.length; i++) {
         const d = new Date(startDate)
-        d.setDate(d.getDate() + i*7)
+        d.setDate(d.getDate() + i * 7)
         const m = d.getMonth()
-        if (m !== prev){
-          out.push({ index: i, label: d.toLocaleString(undefined,{ month:"short" }) })
+        if (m !== prev) {
+          out.push({ index: i, label: d.toLocaleString(undefined, { month: "short" }) })
           prev = m
         }
       }
@@ -150,14 +150,14 @@ export default function HeatmapCard({
     <div className={className}>
       <div className="gh-card">
         <div className="gh-header">
-          <div className="text-sm" style={{opacity:.8}}>Contributions (rolling year)</div>
+          <div className="text-sm" style={{ opacity: .8 }}>Contributions (rolling year)</div>
           {rangeLabel && (
-            <div className="text-xs" style={{opacity:.6}}>{rangeLabel}</div>
+            <div className="text-xs" style={{ opacity: .6 }}>{rangeLabel}</div>
           )}
           <div className="gh-legend">
             <span>Less</span>
-            {[0,1,2,3,4].map(i=>(
-              <span key={i} className="cell" style={{background: i===0 ? empty : palette[i]}}/>
+            {[0, 1, 2, 3, 4].map(i => (
+              <span key={i} className="cell" style={{ background: i === 0 ? empty : palette[i] }} />
             ))}
             <span>More</span>
           </div>
@@ -170,11 +170,11 @@ export default function HeatmapCard({
             <div>Fri</div>
           </div>
 
-          <div className="overflow-x-auto">
-            <div style={{minWidth: weeks.length*(CELL+GAP)}}>
-              <div className="gh-months" style={{display:'grid', gridTemplateColumns:`repeat(${weeks.length},${CELL+GAP}px)`}}>
+          <div className="overflow-x-auto gh-scroll" style={{ minWidth: 0, maxWidth: "100%" }}>
+            <div style={{ minWidth: weeks.length * (CELL + GAP) }}>
+              <div className="gh-months" style={{ display: 'grid', gridTemplateColumns: `repeat(${weeks.length},${CELL + GAP}px)` }}>
                 {monthLabels.map(m => (
-                  <div key={m.index} style={{ gridColumnStart: m.index+1 }}>{m.label}</div>
+                  <div key={m.index} style={{ gridColumnStart: m.index + 1 }}>{m.label}</div>
                 ))}
               </div>
 
@@ -183,11 +183,11 @@ export default function HeatmapCard({
                   <div key={ci} className="gh-col">
                     {col.map((lvl, di) => {
                       const isActive = typeof lvl === "number" && lvl >= 0
-                      const level = isActive ? Math.max(0, Math.min(4, lvl|0)) : 0
+                      const level = isActive ? Math.max(0, Math.min(4, lvl | 0)) : 0
                       let title = isActive ? `${level} contributions` : "Outside rolling window"
-                      if (startDate){
+                      if (startDate) {
                         const cellDate = new Date(startDate)
-                        cellDate.setDate(cellDate.getDate() + ci*7 + di)
+                        cellDate.setDate(cellDate.getDate() + ci * 7 + di)
                         title = `${dateFormatter.format(cellDate)} · ${title}`
                       }
                       return (
@@ -215,9 +215,9 @@ export default function HeatmapCard({
   )
 }
 
-function autoMonths(weeks: number){
-  const labels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+function autoMonths(weeks: number) {
+  const labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
   const out = []
-  for (let i=0;i<weeks;i++){ if (i===0 || i%4===0) out.push({ index:i, label: labels[i%12] }) }
+  for (let i = 0; i < weeks; i++) { if (i === 0 || i % 4 === 0) out.push({ index: i, label: labels[i % 12] }) }
   return out
 }

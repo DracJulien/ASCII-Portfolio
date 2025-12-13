@@ -10,6 +10,7 @@ import ProjectCard from "@/components/ProjectCard"
 import VersionBadge from "@/components/VersionBadge"
 import TerminalTabs from "@/components/TerminalTabs"
 import CloneMeButton from "@/components/CloneMeButton"
+import CopyButton from "@/components/CopyButton"
 import BackgroundRain from "@/components/BackgroundRain"
 
 
@@ -67,7 +68,7 @@ export default function App(): JSX.Element {
   const ascii_contact: string = [
     "┌────────────────────────────────────────────────────┐",
     "     Full-Stack Developer — Node.js / React           ",
-    "     Email: juliendrac@pm.me · Aix en Provence (FR)   ",
+    "     Email: julien@seagle.io · Aix en Provence (FR)   ",
     "     GitHub: github.com/Dracjulien                    ",
     "     LinkedIn: linkedin.com/in/julien-drac            ",
     "└────────────────────────────────────────────────────┘",
@@ -278,10 +279,8 @@ jobs:
                   <button className="btn" type="submit">
                     Send
                   </button>
-                  <span className="btn" style={{ pointerEvents: "none" }}>
-                    juliendrac@pm.me
-                  </span>
-                  <a className="btn" href="mailto:juliendrac@pm.me">
+                  <CopyButton text="julien@seagle.io" />
+                  <a className="btn" href="mailto:julien@seagle.io">
                     Open Mail
                   </a>
                 </div>
