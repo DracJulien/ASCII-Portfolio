@@ -1,0 +1,39 @@
+name: Update Contributions
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Every day at midnight
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch Data
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: node scripts/fetch-rolling-year.mjs
+
+      - name: Commit and Push
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          
+          # Check if there are changes
+          if [[ -n $(git status -s public/gh-contribs.json) ]]; then
+            git add public/gh-contribs.json
+            git commit -m "chore: update contributions data"
+            git push
+          else
+            echo "No changes to commit"
+          fi

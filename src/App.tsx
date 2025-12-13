@@ -11,7 +11,7 @@ import VersionBadge from "@/components/VersionBadge"
 import TerminalTabs from "@/components/TerminalTabs"
 import CloneMeButton from "@/components/CloneMeButton"
 import BackgroundRain from "@/components/BackgroundRain"
-import HeatmapWithRefresh from "@/components/HeatmapWithRefresh"
+
 
 type SectionId = "about" | "projects" | "cv" | "contact"
 
@@ -159,7 +159,7 @@ export default function App(): JSX.Element {
                 </div>
               </div>
 
-              <HeatmapWithRefresh />
+              <HeatmapCard className="mt-2" />
 
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
                 <a className="btn" href="#projects">
