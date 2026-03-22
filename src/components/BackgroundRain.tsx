@@ -7,8 +7,8 @@ type Props = { paused?: boolean; density?: number; speed?: number }
 
 export default function BackgroundRain({
   paused = false,
-  density = 18,
-  speed = 1.0,
+  density = 22,
+  speed = 0.8,
 }: Props): React.ReactPortal {   // <-- au lieu de JSX.Element
   const d1 = Math.max(4, Math.round(density * 1.33))
   const s1 = Math.max(0.05, speed * 0.6)

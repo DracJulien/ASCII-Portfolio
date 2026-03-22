@@ -4,22 +4,50 @@ type ProjectCardProps = {
   badges: string[]
   description: string
   code: string
+  demoUrl?: string
+  codeUrl?: string
 }
 
-export default function ProjectCard({ title, status='[prod]', badges=[], description, code }: ProjectCardProps){
+function statusClass(s: string) {
+  if (s.toLowerCase().includes("prod")) return "prod"
+  if (s.toLowerCase().includes("dev")) return "dev"
+  return "rd"
+}
+
+export default function ProjectCard({
+  title,
+  status = "[prod]",
+  badges = [],
+  description,
+  code,
+  demoUrl = "#",
+  codeUrl = "#",
+}: ProjectCardProps) {
   return (
-    <article className="dashed rounded-xl p-4 bg-card/80">
-      <div className="flex items-center gap-2 flex-wrap">
-        <strong className="text-white">{title}</strong>
-        <span className={status.includes('prod') ? 'text-green-300 text-xs' : 'text-yellow-300 text-xs'}>{status}</span>
+    <article className="project-card">
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
+        <span className="project-card-title">{title}</span>
+        <span className={`project-card-status ${statusClass(status)}`}>{status}</span>
       </div>
-      <div className="flex flex-wrap gap-2 mt-1 text-gray-400">
-        {badges.map(b => <span key={b} className="px-2 py-0.5 rounded-full text-xs dashed">{b}</span>)}
+
+      <div className="project-card-badges">
+        {badges.map((b) => (
+          <span key={b} className="badge">{b}</span>
+        ))}
       </div>
-      {description && <p className="text-gray-300 mt-2">{description}</p>}
-      {code && <pre className="mt-2"><code className="ps" dangerouslySetInnerHTML={{__html: code}}/></pre>}
-      <div className="mt-2 text-sm">
-        <a className="underline decoration-dashed underline-offset-4" href="#">→ Demo</a> · <a className="underline decoration-dashed underline-offset-4" href="#">Code</a>
+
+      {description && <p className="project-card-desc">{description}</p>}
+
+      {code && (
+        <pre style={{ margin: "0 0 16px" }}>
+          <code className="ps" dangerouslySetInnerHTML={{ __html: code }} />
+        </pre>
+      )}
+
+      <div className="project-card-links">
+        <a href={demoUrl}>→ Demo</a>
+        <span style={{ color: "var(--surface-border)" }}>·</span>
+        <a href={codeUrl}>Code</a>
       </div>
     </article>
   )
